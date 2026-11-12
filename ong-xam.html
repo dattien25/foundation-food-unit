@@ -1,0 +1,2477 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Ống Xăm Câu Hỏi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Yeseva+One&display=swap&subset=vietnamese">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* Layout: one temple-altar stage (mode switch + ống xăm + nút lắc + khay quẻ); question bank slides in from the right; the slip unrolls over the stage. Single deliberate look: lacquer + gold; the Exit Ticket tube turns jade. */
+:root {
+  --lacquer: #4a0d10;
+  --lacquer-deep: #260506;
+  --panel: #220809;
+  --line: rgba(226, 182, 90, 0.30);
+  --gold: #e2b65a;
+  --gold-hi: #f6dc94;
+  --text: #f7ead0;
+  --muted: #dcc49c;
+  --paper: #f3e3bd;
+  --paper-edge: #d6b97f;
+  --ink: #2b1608;
+  --ink-muted: #6b4a2a;
+  --seal: #b3201c;
+  --jade: #2f7d5c;
+  --jade-hi: #7fd3ac;
+  --slate: #4c5862;
+  --wood: #d2a468;
+  --danger: #ff9b8a;
+  --ok: #7fd3ac;
+  --retry: #ffb26b;
+
+  /* tube colours (lesson = red lacquer) */
+  --t1: #3d0709; --t2: #8f1a1d; --t3: #c13a32; --t4: #5a0d10;
+  --tip: #b3201c;
+  --rod-a: #d8483c; --rod-b: #8f1a1d; --rod-c: #5a0d10;
+  --accent-ink: #b3201c;
+
+  --f-display: "Yeseva One", "Noto Serif", Georgia, serif;
+  --f-body: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+body[data-mode="exit"] {
+  --t1: #062a20; --t2: #12634a; --t3: #2f9a72; --t4: #0b3f30;
+  --tip: #1f7a58;
+  --rod-a: #3fae84; --rod-b: #17694e; --rod-c: #0b3f30;
+  --accent-ink: #1f6e50;
+}
+body[data-mode="lesson"] .only-exit,
+body[data-mode="exit"] .only-lesson { display: none !important; }
+
+[hidden] { display: none !important; }
+html { min-height: 100%; background: var(--lacquer-deep); }
+body { min-height: 100vh; }
+body {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 42%, rgba(255, 190, 110, 0.10), transparent 70%),
+    repeating-linear-gradient(45deg, rgba(226, 182, 90, 0.035) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(-45deg, rgba(226, 182, 90, 0.035) 0 1px, transparent 1px 22px),
+    linear-gradient(180deg, var(--lacquer) 0%, var(--lacquer-deep) 100%);
+  background-color: var(--lacquer-deep);
+  color: var(--text);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
+
+.vi { display: block; }
+.en { display: block; font-size: 0.78em; opacity: 0.78; letter-spacing: 0.02em; }
+
+/* ---------- App frame ---------- */
+.app {
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 14px 24px;
+  box-sizing: border-box;
+}
+header.top {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--line); padding-bottom: 12px;
+}
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.brand h1 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 3.2vw, 38px); color: var(--gold-hi); letter-spacing: 0.01em; line-height: 1.1; }
+.brand p { margin: 0; color: var(--muted); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+.top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line); background: rgba(0, 0, 0, 0.18);
+  padding: 7px 12px; border-radius: 6px; text-align: left; line-height: 1.2;
+}
+.btn:hover { border-color: var(--gold); }
+.btn .count {
+  font-family: var(--f-display); color: var(--ink); background: var(--gold);
+  min-width: 26px; padding: 2px 6px; border-radius: 4px; text-align: center; font-variant-numeric: tabular-nums;
+}
+.btn.on { border-color: var(--gold); }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+/* ---------- Mode switch + set chips ---------- */
+.modes {
+  display: inline-flex; border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 3px;
+  background: rgba(0, 0, 0, 0.25);
+}
+.mode {
+  border: 0; background: transparent; padding: 7px 16px; border-radius: 6px; text-align: left; line-height: 1.15; color: var(--muted);
+}
+.mode .vi { font-weight: 600; }
+.mode[aria-pressed="true"] { background: var(--gold); color: var(--ink); }
+body[data-mode="exit"] .mode[data-mode="exit"][aria-pressed="true"] { background: var(--jade-hi); }
+.sets { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; max-width: 760px; }
+.set {
+  border: 1px solid rgba(127, 211, 172, 0.35); background: rgba(0, 0, 0, 0.2); color: var(--text);
+  padding: 5px 12px; border-radius: 999px; font-size: 13px;
+}
+.set b { font-weight: 600; color: var(--jade-hi); font-variant-numeric: tabular-nums; margin-left: 4px; }
+.set[aria-pressed="true"] { background: var(--jade-hi); color: var(--ink); border-color: var(--jade-hi); }
+.set[aria-pressed="true"] b { color: var(--ink); }
+
+/* ---------- Stage ---------- */
+.stage {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; padding-top: 18px; text-align: center;
+}
+.sample-note {
+  border: 1px dashed var(--line); color: var(--muted); font-size: 13px;
+  padding: 6px 12px; border-radius: 6px; max-width: 520px;
+}
+.sample-note button { background: none; border: 0; padding: 0; color: var(--gold-hi); text-decoration: underline; }
+
+.art { position: relative; width: 340px; max-width: 100%; height: 400px; display: flex; justify-content: center; }
+.altar {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 330px; max-width: 100%; height: 22px; border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55), transparent 70%);
+}
+
+.tube { position: absolute; bottom: 12px; left: 50%; width: 220px; height: 380px; margin-left: -110px; transform-origin: 50% 100%; }
+.tube.shaking { animation: shake 0.22s ease-in-out infinite; }
+@keyframes shake {
+  0% { transform: rotate(-7deg) translateX(-6px); }
+  50% { transform: rotate(7deg) translateX(6px) translateY(-4px); }
+  100% { transform: rotate(-7deg) translateX(-6px); }
+}
+.mouth {
+  position: absolute; left: 10px; width: 200px; top: 130px; height: 40px; border-radius: 50%; z-index: 1;
+  background: radial-gradient(ellipse at 50% 40%, #120203 30%, var(--t1) 100%);
+  border: 3px solid #8e6a2c; box-sizing: border-box;
+}
+.sticks { position: absolute; inset: 0; z-index: 2; }
+.stick {
+  position: absolute; bottom: 22px;
+  transform: translateX(-50%) rotate(var(--rot));
+  transform-origin: 50% 100%;
+  border-radius: 3px 3px 1px 1px;
+  background: linear-gradient(to bottom, var(--tip) 0 26px, var(--wood) 26px);
+  box-shadow: inset -2px 0 0 rgba(0, 0, 0, 0.18), inset 1px 0 0 rgba(255, 255, 255, 0.25);
+}
+.sticks.jiggle .stick { animation: jig 0.16s ease-in-out infinite alternate; animation-delay: var(--d); }
+@keyframes jig {
+  from { transform: translateX(-50%) rotate(calc(var(--rot) - 2deg)); }
+  to { transform: translateX(-50%) rotate(calc(var(--rot) + 2deg)) translateY(-10px); }
+}
+.stick.rise { transition: transform 0.5s cubic-bezier(.2, .9, .3, 1.2), opacity 0.2s 0.5s; transform: translateX(-50%) translateY(-150px) rotate(0deg); z-index: 9; }
+
+.body {
+  position: absolute; left: 10px; width: 200px; top: 150px; bottom: 0; z-index: 3;
+  border-radius: 0 0 14px 14px / 0 0 10px 10px;
+  background:
+    linear-gradient(to bottom, transparent 0 28px, var(--gold) 28px 34px, transparent 34px calc(100% - 40px), var(--gold) calc(100% - 40px) calc(100% - 34px), transparent calc(100% - 34px)),
+    linear-gradient(90deg, var(--t1) 0%, var(--t2) 22%, var(--t3) 38%, var(--t2) 58%, var(--t4) 82%, var(--t1) 100%);
+  -webkit-mask: radial-gradient(ellipse 100px 20px at 50% 0, transparent 98%, #000 100%);
+  mask: radial-gradient(ellipse 100px 20px at 50% 0, transparent 98%, #000 100%);
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.45);
+}
+.lip {
+  position: absolute; left: 10px; width: 200px; top: 130px; height: 40px; z-index: 4; border-radius: 50%;
+  border: 5px solid transparent; border-bottom-color: var(--gold); box-sizing: border-box; pointer-events: none;
+}
+.emblem {
+  position: absolute; z-index: 5; left: 50%; top: 220px; transform: translateX(-50%);
+  width: 92px; height: 92px; border-radius: 50%;
+  border: 3px double var(--gold); display: grid; place-items: center;
+  color: var(--gold-hi); font-family: var(--f-display); font-size: 30px; line-height: 1;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.18), transparent 70%);
+}
+.emblem small { display: block; font-family: var(--f-body); font-size: 10px; letter-spacing: 0.2em; margin-top: 4px; color: var(--muted); }
+.empty-tube {
+  position: absolute; z-index: 6; left: 50%; top: 92px; transform: translateX(-50%);
+  white-space: nowrap; color: var(--gold-hi); font-family: var(--f-display); font-size: 20px;
+}
+
+.fallen {
+  position: absolute; z-index: 7; bottom: 18px; left: 50%; margin-left: -6px;
+  width: 12px; height: 230px; transform-origin: 50% 100%;
+  border-radius: 3px; background: linear-gradient(to bottom, var(--tip) 0 26px, var(--wood) 26px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+  transform: translate(120px, 0) rotate(82deg);
+}
+.fallen.drop { animation: drop 0.75s cubic-bezier(.3, .1, .4, 1) both; }
+@keyframes drop {
+  0% { transform: translate(0, -210px) rotate(0deg); opacity: 0; }
+  12% { opacity: 1; }
+  70% { transform: translate(120px, 0) rotate(88deg); }
+  84% { transform: translate(120px, -8px) rotate(76deg); }
+  100% { transform: translate(120px, 0) rotate(82deg); }
+}
+.fallen span {
+  position: absolute; left: 50%; top: 60%; transform: translate(-50%, -50%) rotate(-90deg);
+  font-family: var(--f-display); font-size: 13px; color: var(--ink); white-space: nowrap;
+}
+
+.draw-btn {
+  border: 0; border-radius: 8px; padding: 14px 34px;
+  background: linear-gradient(180deg, var(--gold-hi), var(--gold));
+  color: var(--ink); font-weight: 700; font-size: 20px; line-height: 1.15;
+  box-shadow: 0 3px 0 #8e6a2c, 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+.draw-btn .en { font-weight: 500; font-size: 13px; opacity: 0.8; }
+.draw-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #8e6a2c, 0 6px 14px rgba(0, 0, 0, 0.35); }
+.draw-btn[disabled] { filter: grayscale(0.6); opacity: 0.55; cursor: not-allowed; }
+
+.counter { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.counter b { color: var(--gold-hi); font-family: var(--f-display); font-weight: 400; font-size: 18px; }
+.kbd { border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 12px; }
+
+.tray { width: 100%; max-width: 760px; border-top: 1px solid var(--line); padding-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.tray-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; text-align: left; }
+.tray-head h2 { margin: 0; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px 5px 5px;
+  border: 1px solid var(--line); border-radius: 4px; background: rgba(0, 0, 0, 0.2); font-size: 13px;
+}
+.chip:hover { border-color: var(--gold); }
+.chip .no { font-family: var(--f-display); background: var(--wood); color: var(--ink); padding: 1px 6px; border-radius: 2px; font-variant-numeric: tabular-nums; }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+.chip .res { font-weight: 700; }
+.chip[data-result="ok"] { border-color: var(--ok); }
+.chip[data-result="ok"] .res { color: var(--ok); }
+.chip[data-result="retry"] { border-color: var(--retry); }
+.chip[data-result="retry"] .res { color: var(--retry); }
+.tray-empty { color: var(--muted); font-size: 13px; text-align: left; margin: 0; }
+.tally { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; text-align: left; font-variant-numeric: tabular-nums; }
+.tally .ok { color: var(--ok); } .tally .retry { color: var(--retry); } .tally .none { color: var(--muted); }
+.review { text-align: left; font-size: 14px; border: 1px dashed rgba(255, 178, 107, 0.5); border-radius: 6px; padding: 8px 10px; }
+.review .lbl { color: var(--retry); font-weight: 600; }
+
+/* ---------- Slip ---------- */
+.layer {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+  background: rgba(15, 2, 3, 0.72); backdrop-filter: blur(2px);
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  overflow-y: auto;
+}
+.slip { width: min(640px, 100%); display: flex; flex-direction: column; align-items: stretch; }
+.rod {
+  height: 18px; border-radius: 9px; margin: 0 -14px; position: relative; z-index: 2;
+  background: linear-gradient(180deg, var(--rod-a), var(--rod-b) 60%, var(--rod-c));
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+.rod::before, .rod::after { content: ""; position: absolute; top: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); }
+.rod::before { left: -4px; } .rod::after { right: -4px; }
+.paper {
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(255, 255, 255, 0.35), transparent 50%),
+    linear-gradient(90deg, var(--paper-edge), var(--paper) 6%, var(--paper) 94%, var(--paper-edge));
+  color: var(--ink); padding: 24px clamp(18px, 4vw, 40px) 22px; transform-origin: 50% 0;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.slip.unroll .paper { animation: unroll 0.6s cubic-bezier(.2, .8, .3, 1) both; }
+.slip.unroll .paper > * { animation: fadein 0.35s 0.45s both; }
+@keyframes unroll { from { transform: scaleY(0.04); } to { transform: scaleY(1); } }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+.slip-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+.slip-no .lbl { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); font-weight: 600; }
+.slip-no .num { font-family: var(--f-display); font-size: clamp(46px, 7vw, 68px); line-height: 1; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.slip-no .setname { font-size: 13px; color: var(--ink-muted); margin-top: 2px; }
+.seal {
+  border: 3px solid currentColor; color: var(--seal); padding: 8px 12px; transform: rotate(-4deg);
+  text-align: center; line-height: 1.15; border-radius: 3px; flex-shrink: 0;
+  box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 3px currentColor;
+}
+.seal .vi { font-family: var(--f-display); font-size: 22px; }
+.seal .en { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.9; }
+.seal[data-level="dai"] { color: var(--seal); background: rgba(179, 32, 28, 0.08); }
+.seal[data-level="thuong"] { color: var(--jade); }
+.seal[data-level="trung"] { color: var(--ink-muted); }
+.seal[data-level="ha"] { color: var(--slate); }
+
+.rule { height: 0; border-top: 1px solid rgba(43, 22, 8, 0.25); margin: 0; }
+.q-lbl { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); font-weight: 600; margin: 0; }
+.q-text { font-size: clamp(22px, 3.2vw, 34px); line-height: 1.3; font-weight: 600; margin: 0; text-wrap: balance; overflow-wrap: anywhere; }
+.fortune { margin: 0; font-style: italic; color: var(--ink-muted); font-size: 15px; }
+.fortune .en { font-size: 13px; }
+
+.answer-zone { display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed rgba(43, 22, 8, 0.3); padding-top: 12px; }
+.a-box { background: rgba(31, 110, 80, 0.10); border-left: 4px solid var(--jade); padding: 8px 12px; border-radius: 0 4px 4px 0; }
+.a-text { margin: 2px 0 0; font-size: clamp(18px, 2.4vw, 24px); font-weight: 600; color: #134a35; overflow-wrap: anywhere; }
+.mark-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.mbtn { border: 2px solid rgba(43, 22, 8, 0.25); background: transparent; color: var(--ink); padding: 6px 12px; border-radius: 6px; text-align: left; line-height: 1.2; font-weight: 600; }
+.mbtn .en { font-weight: 500; }
+.mbtn.ok[aria-pressed="true"] { background: var(--jade); border-color: var(--jade); color: var(--paper); }
+.mbtn.retry[aria-pressed="true"] { background: #b8661d; border-color: #b8661d; color: var(--paper); }
+
+.slip-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 2px; }
+.sbtn {
+  border: 1px solid rgba(43, 22, 8, 0.35); background: transparent; color: var(--ink);
+  padding: 8px 14px; border-radius: 6px; text-align: left; line-height: 1.2; font-weight: 600;
+}
+.sbtn .en { font-weight: 500; }
+.sbtn.primary { background: var(--accent-ink); border-color: var(--accent-ink); color: var(--paper); }
+.sbtn.reveal { border-color: var(--jade); color: #134a35; align-self: flex-start; }
+.sbtn:hover { border-color: var(--ink); }
+.sbtn.primary:hover { filter: brightness(1.1); }
+.sbtn[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+/* ---------- Question bank panel ---------- */
+.backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(10, 1, 2, 0.55); }
+.panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 41;
+  width: min(500px, 100%); background: var(--panel); border-left: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  box-shadow: -20px 0 40px rgba(0, 0, 0, 0.4);
+}
+.panel-head {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 16px 18px; border-bottom: 1px solid var(--line);
+}
+.panel-head h2 { margin: 0; font-family: var(--f-display); font-weight: 400; color: var(--gold-hi); font-size: 22px; line-height: 1.15; }
+.panel-head h2 .en { font-family: var(--f-body); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.panel-body { overflow-y: auto; padding: 16px 18px 28px; display: flex; flex-direction: column; gap: 22px; min-height: 0; }
+.section { display: flex; flex-direction: column; gap: 8px; }
+.section h3 { margin: 0; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+.section h3 .en { display: inline; font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+.hint { margin: 0; color: var(--muted); font-size: 13px; }
+.hint code { background: rgba(255, 255, 255, 0.08); padding: 0 4px; border-radius: 3px; }
+textarea, select, input[type="text"], .file {
+  width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line);
+  border-radius: 6px; padding: 9px 10px; resize: vertical;
+}
+textarea:focus, select:focus, input[type="text"]:focus { border-color: var(--gold); outline: none; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 12px; color: var(--muted); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.gbtn {
+  border: 1px solid var(--gold); background: var(--gold); color: var(--ink); font-weight: 600;
+  padding: 7px 14px; border-radius: 6px; line-height: 1.2; text-align: left;
+}
+.gbtn.ghost { background: transparent; color: var(--gold-hi); }
+.gbtn.danger { background: transparent; color: var(--danger); border-color: rgba(255, 155, 138, 0.5); }
+.gbtn.armed { background: var(--danger); color: var(--ink); border-color: var(--danger); }
+.gbtn .en { font-weight: 500; }
+.gbtn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.file { padding: 7px; font-size: 13px; }
+.import-box { border: 1px solid var(--line); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 8px; background: rgba(0, 0, 0, 0.15); }
+.import-box ol { margin: 0; padding-left: 20px; color: var(--muted); font-size: 13px; }
+.error { color: var(--danger); font-size: 13px; margin: 0; }
+.sample-banner { border: 1px dashed var(--gold); border-radius: 6px; padding: 8px 10px; font-size: 13px; color: var(--gold-hi); }
+
+.qlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.qlist li { display: grid; grid-template-columns: 38px 1fr auto; gap: 10px; align-items: start; padding: 9px 0; border-bottom: 1px solid rgba(226, 182, 90, 0.14); }
+.qlist .n { font-family: var(--f-display); color: var(--ink); background: var(--wood); text-align: center; border-radius: 3px; padding: 1px 0; font-variant-numeric: tabular-nums; }
+.qlist .t { min-width: 0; overflow-wrap: anywhere; }
+.qlist .ans { display: block; color: var(--jade-hi); font-size: 13px; margin-top: 2px; }
+.qlist .tag { display: inline-block; font-size: 11px; color: var(--gold); border: 1px solid var(--line); border-radius: 3px; padding: 0 5px; margin-left: 6px; vertical-align: 1px; }
+.qlist .acts { display: flex; gap: 4px; }
+.ibtn { border: 1px solid transparent; background: transparent; color: var(--muted); padding: 3px 7px; border-radius: 4px; font-size: 12px; }
+.ibtn:hover { border-color: var(--line); color: var(--text); }
+.ibtn.del:hover { color: var(--danger); }
+.qlist .edit { grid-column: 2 / 4; display: flex; flex-direction: column; gap: 6px; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  z-index: 60; background: var(--paper); color: var(--ink); padding: 8px 14px; border-radius: 6px; font-weight: 600;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35); max-width: calc(100% - 32px); text-align: center;
+}
+
+/* ---------- v3: course / class context, tabs, difficulty, teacher area ---------- */
+:root {
+  --chip: var(--gold-hi);
+  --d1: #7fd3ac; --d2: #b8d98a; --d3: #e2b65a; --d4: #ffa36b; --d5: #ff7a6b;
+}
+body[data-mode="exit"] { --chip: var(--jade-hi); }
+
+.context { display: flex; flex-wrap: wrap; gap: 10px 14px; justify-content: center; align-items: flex-end; max-width: 760px; }
+.ctl { display: flex; flex-direction: column; gap: 3px; text-align: left; font-size: 12px; color: var(--muted); min-width: 0; }
+.ctl select {
+  width: 200px; max-width: 100%; background: rgba(0, 0, 0, 0.28); border: 1px solid var(--line);
+  border-radius: 6px; padding: 6px 8px; color: var(--text);
+}
+.ctl select:disabled { opacity: 0.5; }
+select option { background: var(--panel); color: var(--text); }
+
+.set { border-color: color-mix(in srgb, var(--chip) 40%, transparent); }
+.set b { color: var(--chip); }
+.set[aria-pressed="true"] { background: var(--chip); border-color: var(--chip); }
+
+.slip-student { font-size: 14px; color: var(--ink-muted); margin: 0; }
+.slip-student b { color: var(--ink); }
+.chip .who { color: var(--muted); }
+
+.tabs { display: flex; gap: 2px; padding: 0 12px; border-bottom: 1px solid var(--line); overflow-x: auto; flex-shrink: 0; }
+.tab {
+  border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted);
+  padding: 10px 10px 8px; white-space: nowrap; display: inline-flex; gap: 6px; align-items: center; line-height: 1.15; text-align: left;
+}
+.tab .en { font-size: 11px; }
+.tab[aria-selected="true"] { color: var(--gold-hi); border-bottom-color: var(--gold); }
+.tab svg { width: 13px; height: 13px; flex-shrink: 0; }
+.tabpane { display: flex; flex-direction: column; gap: 22px; }
+
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: rgba(0, 0, 0, 0.14); }
+.grow { flex: 1 1 160px; min-width: 0; width: auto !important; }
+.gbtn.sm, .sm { padding: 5px 10px; font-size: 13px; }
+.ulist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ulist li { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
+.ulist input { padding: 6px 8px; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--gold-hi); text-decoration: underline; font-size: inherit; }
+
+.dsum { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dsum span { display: inline-flex; align-items: center; gap: 5px; }
+.ddot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.ddot[data-d="1"] { background: var(--d1); } .ddot[data-d="2"] { background: var(--d2); } .ddot[data-d="3"] { background: var(--d3); }
+.ddot[data-d="4"] { background: var(--d4); } .ddot[data-d="5"] { background: var(--d5); }
+.qlist .acts { flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+.dsel { width: auto !important; padding: 3px 4px !important; font-size: 12px; max-width: 128px; }
+.dsel.manual { border-color: var(--gold) !important; }
+.qlist .meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+.lock { display: flex; flex-direction: column; gap: 10px; max-width: 320px; }
+.lock h3 { margin: 0; color: var(--gold); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; }
+input[type="password"], input[type="number"] {
+  width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line);
+  border-radius: 6px; padding: 9px 10px; letter-spacing: 0.3em;
+}
+
+.twrap { overflow-x: auto; }
+.stable { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.stable th { text-align: left; font-weight: 600; color: var(--muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.stable td { padding: 6px 6px; border-bottom: 1px solid rgba(226, 182, 90, 0.12); vertical-align: middle; }
+.stable td.name { min-width: 120px; }
+.stable select { width: auto; padding: 3px 4px; font-size: 12px; }
+.tier-weak { color: var(--retry); } .tier-strong { color: var(--ok); }
+
+.switch { display: inline-flex; gap: 8px; align-items: center; font-weight: 600; }
+.switch input { width: 18px; height: 18px; accent-color: var(--gold); }
+.radios { display: flex; flex-direction: column; gap: 6px; border: 0; padding: 0; margin: 0; }
+.radios legend { font-size: 12px; color: var(--muted); padding: 0; margin-bottom: 4px; }
+.radios label { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+input[type="range"] { width: 100%; accent-color: var(--gold); }
+.explain { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.55; }
+.explain b { color: var(--text); font-weight: 600; }
+.pct { color: var(--gold-hi); }
+
+@media (max-width: 520px) {
+  .ctl { flex: 1 1 140px; }
+  .ctl select { width: 100%; }
+}
+
+@media (max-width: 520px) {
+  .art { height: 360px; }
+  .tube { transform: scale(0.88); }
+  .fallen { height: 200px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tube.shaking, .sticks.jiggle .stick { animation-duration: 0.6s; }
+  .slip.unroll .paper, .slip.unroll .paper > *, .fallen.drop { animation-duration: 0.01s; animation-delay: 0s; }
+}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>Ống Xăm Câu Hỏi</h1>
+      <p>Fortune Sticks · Xin quẻ trả lời</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn on" id="soundBtn" type="button" aria-pressed="true"></button>
+      <button class="btn" id="fsBtn" type="button"><span><span class="vi">Toàn màn hình</span><span class="en">Fullscreen</span></span></button>
+      <button class="btn" id="openPanel" type="button"><span class="count" id="qCount">0</span><span><span class="vi">Câu hỏi</span><span class="en">Questions</span></span></button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="modes" role="group" aria-label="Chọn ống · Choose a tube">
+      <button class="mode" type="button" data-mode="lesson" aria-pressed="true"><span class="vi">Câu hỏi bài học</span><span class="en">Lesson questions</span></button>
+      <button class="mode" type="button" data-mode="exit" aria-pressed="false"><span class="vi">Vé ra về</span><span class="en">Exit Ticket</span></button>
+    </div>
+
+    <div class="context">
+      <label class="ctl" for="courseSel">Khóa học · Course<select id="courseSel"></select></label>
+      <label class="ctl" for="classSel">Lớp · Class<select id="classSel"></select></label>
+      <label class="ctl" for="studentSel">Người trả lời · Answering<select id="studentSel"></select></label>
+    </div>
+
+    <div class="sets" id="units" role="group" aria-label="Unit"></div>
+
+    <div class="sample-note only-lesson" id="sampleNote" hidden>
+      Đang dùng câu mẫu · Using sample questions. <button type="button" id="sampleOpen">Thêm câu của bạn · Add yours</button>
+    </div>
+
+    <div class="art" aria-hidden="true">
+      <div class="altar"></div>
+      <div class="tube" id="tube">
+        <div class="mouth"></div>
+        <div class="sticks" id="sticks"></div>
+        <div class="body"></div>
+        <div class="lip"></div>
+        <div class="emblem">
+          <div class="only-lesson">Quẻ<small>FORTUNE</small></div>
+          <div class="only-exit">Vé<small>EXIT</small></div>
+        </div>
+        <div class="empty-tube" id="emptyTube" hidden>Hết quẻ · Empty</div>
+      </div>
+      <div class="fallen" id="fallen" hidden><span id="fallenNo"></span></div>
+    </div>
+
+    <button class="draw-btn" id="drawBtn" type="button">
+      <span class="vi">Lắc ống xăm</span><span class="en">Shake to draw</span>
+    </button>
+    <div class="counter" id="counter"></div>
+
+    <section class="tray" aria-labelledby="trayTitle">
+      <div class="tray-head">
+        <h2 id="trayTitle">Quẻ đã rút · Drawn sticks</h2>
+        <button class="gbtn danger" id="resetBtn" type="button"><span class="vi">Bỏ hết vào lại</span><span class="en">Return all sticks</span></button>
+      </div>
+      <div class="tally" id="tally"></div>
+      <div class="chips" id="chips"></div>
+      <div class="review only-exit" id="review" hidden></div>
+    </section>
+  </main>
+</div>
+
+<!-- Slip -->
+<div class="layer" id="slipLayer" hidden>
+  <div class="slip" id="slip" role="dialog" aria-modal="true" aria-labelledby="slipQ">
+    <div class="rod"></div>
+    <div class="paper">
+      <div class="slip-top">
+        <div class="slip-no">
+          <div class="lbl only-lesson">Quẻ số · Stick No.</div>
+          <div class="lbl only-exit">Vé ra về số · Exit Ticket No.</div>
+          <div class="num" id="slipNo">01</div>
+          <div class="setname" id="slipSet"></div>
+        </div>
+        <div class="seal" id="slipSeal" data-level="dai"><span class="vi" id="sealVi"></span><span class="en" id="sealEn"></span></div>
+      </div>
+      <hr class="rule">
+      <p class="slip-student" id="slipStudent" hidden></p>
+      <p class="q-lbl" id="slipKind">Câu hỏi · Question</p>
+      <p class="q-text" id="slipQ"></p>
+      <p class="fortune"><span class="vi" id="fortuneVi"></span><span class="en" id="fortuneEn"></span></p>
+
+      <div class="answer-zone">
+        <button class="sbtn reveal" id="showAnswer" type="button"><span class="vi">Xem đáp án</span><span class="en">Show answer · phím A</span></button>
+        <div class="a-box" id="answerBox" hidden>
+          <p class="q-lbl">Đáp án · Answer</p>
+          <p class="a-text" id="answerText"></p>
+        </div>
+        <div class="mark-row">
+          <button class="mbtn ok" id="markOk" type="button" aria-pressed="false"><span class="vi">✓ Trả lời được</span><span class="en">Got it</span></button>
+          <button class="mbtn retry" id="markRetry" type="button" aria-pressed="false"><span class="vi">↻ Cần ôn lại</span><span class="en">Needs review</span></button>
+        </div>
+      </div>
+
+      <div class="slip-actions">
+        <button class="sbtn primary" id="againBtn" type="button"><span class="vi">Rút tiếp</span><span class="en">Draw again</span></button>
+        <button class="sbtn" id="putBackBtn" type="button"><span class="vi">Bỏ que vào lại</span><span class="en">Put stick back</span></button>
+        <button class="sbtn" id="closeSlip" type="button"><span class="vi">Đóng</span><span class="en">Close</span></button>
+      </div>
+    </div>
+    <div class="rod"></div>
+  </div>
+</div>
+
+<!-- Management panel -->
+<div class="backdrop" id="backdrop" hidden></div>
+<aside class="panel" id="panel" hidden aria-labelledby="panelTitle">
+  <div class="panel-head">
+    <h2 id="panelTitle"><span class="vi">Quản lý</span><span class="en">Manage</span></h2>
+    <button class="btn" id="closePanel" type="button"><span><span class="vi">Đóng</span><span class="en">Close</span></span></button>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Mục quản lý · Sections">
+    <button class="tab" role="tab" type="button" data-tab="questions"><span><span class="vi">Câu hỏi</span><span class="en">Questions</span></span></button>
+    <button class="tab" role="tab" type="button" data-tab="courses"><span><span class="vi">Khóa học & Unit</span><span class="en">Courses</span></span></button>
+    <button class="tab" role="tab" type="button" data-tab="classes"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 7V5a4 4 0 1 1 8 0v2h1v8H3V7h1Zm2 0h4V5a2 2 0 1 0-4 0v2Z"/></svg><span><span class="vi">Lớp & Học sinh</span><span class="en">Classes</span></span></button>
+    <button class="tab" role="tab" type="button" data-tab="teacher"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 7V5a4 4 0 1 1 8 0v2h1v8H3V7h1Zm2 0h4V5a2 2 0 1 0-4 0v2Z"/></svg><span><span class="vi">Cài đặt GV</span><span class="en">Teacher</span></span></button>
+  </nav>
+  <div class="panel-body">
+
+    <!-- Questions -->
+    <div class="tabpane" id="pane-questions">
+      <div class="sample-banner only-lesson" id="sampleBanner" hidden>
+        Đây là câu mẫu. Câu mẫu tự xoá khi bạn thêm câu đầu tiên.<br>
+        These are samples. They disappear when you add your first question.
+      </div>
+
+      <div class="section">
+        <h3>Thêm một câu <span class="en">· Add one</span></h3>
+        <div class="field">
+          <label for="oneInput">Câu hỏi · Question</label>
+          <textarea id="oneInput" rows="2" placeholder="VD: What's the English word? → tầng hầm"></textarea>
+        </div>
+        <div class="field only-exit">
+          <label for="oneAnswer">Đáp án · Answer</label>
+          <input type="text" id="oneAnswer" placeholder="basement">
+        </div>
+        <div class="row">
+          <div class="field grow">
+            <label for="unitAdd">Unit</label>
+            <select id="unitAdd"></select>
+          </div>
+          <div class="field">
+            <label for="diffAdd">Độ khó · Difficulty</label>
+            <select id="diffAdd">
+              <option value="0">Tự động · Auto</option>
+              <option value="1">1 · Rất dễ</option>
+              <option value="2">2 · Dễ</option>
+              <option value="3">3 · Vừa</option>
+              <option value="4">4 · Khó</option>
+              <option value="5">5 · Rất khó</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" id="unitNewWrap" hidden>
+          <label for="unitNew">Tên unit mới · New unit name</label>
+          <input type="text" id="unitNew" placeholder="Unit 4 · Food and Drink">
+        </div>
+        <div class="row"><button class="gbtn" id="addOne" type="button"><span class="vi">Thêm</span><span class="en">Add</span></button></div>
+      </div>
+
+      <div class="section">
+        <h3>Dán nhiều câu <span class="en">· Paste a list</span></h3>
+        <p class="hint only-lesson">Mỗi dòng một câu, vào unit đang chọn ở trên. Thêm <code>| 1–5</code> cuối dòng nếu muốn đặt độ khó. · One per line; add <code>| 1–5</code> to set difficulty.</p>
+        <p class="hint only-exit">Mỗi dòng: <code>câu hỏi | đáp án</code> (thêm <code>| 1–5</code> nếu muốn đặt độ khó), vào unit đang chọn ở trên. · <code>question | answer | difficulty?</code></p>
+        <textarea id="bulkInput" rows="5"></textarea>
+        <div class="row"><button class="gbtn" id="addBulk" type="button"><span class="vi">Thêm tất cả</span><span class="en">Add all</span></button></div>
+      </div>
+
+      <div class="section">
+        <h3>Tải file lên <span class="en">· Upload a file</span></h3>
+        <p class="hint only-lesson">Excel, .csv hoặc .txt. Mỗi hàng một câu (lấy ô chữ dài nhất). Mỗi sheet thành một unit của khóa đang chọn; sheet tên mặc định thì vào unit đang chọn ở trên. · Each sheet becomes a unit.</p>
+        <p class="hint only-exit">Cột A = câu hỏi, cột B = đáp án, cột C = độ khó 1–5 (không bắt buộc). Mỗi sheet thành một unit của khóa đang chọn (đặt tên sheet theo unit). · A = question, B = answer, C = difficulty; each sheet becomes a unit.</p>
+        <input class="file" type="file" id="fileInput" accept=".xlsx,.xls,.csv,.txt">
+        <p class="error" id="fileError" hidden></p>
+        <div class="import-box" id="importBox" hidden>
+          <p class="hint" id="importInfo"></p>
+          <ol id="importPreview"></ol>
+          <div class="row">
+            <button class="gbtn" id="importAppend" type="button"><span class="vi">Thêm vào</span><span class="en">Append</span></button>
+            <button class="gbtn ghost" id="importReplace" type="button"><span class="vi">Thay câu trong các unit này</span><span class="en">Replace these units</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="row" style="justify-content: space-between;">
+          <h3>Danh sách <span class="en">· List (<span id="listCount">0</span>)</span></h3>
+          <button class="gbtn danger sm" id="clearAll" type="button"></button>
+        </div>
+        <p class="hint" id="listHint"></p>
+        <div class="dsum" id="diffSummary"></div>
+        <p class="hint">Độ khó tự động dựa vào dạng câu, độ dài câu, độ dài đáp án và tỉ lệ học sinh trả lời đúng (từ 3 lượt trở lên). Chọn số 1–5 để chỉnh tay; chọn "Tự động" để trả lại. · Auto difficulty uses question type, length and the class's success rate; pick 1–5 to override.</p>
+        <ol class="qlist" id="qlist"></ol>
+      </div>
+    </div>
+
+    <!-- Courses & units -->
+    <div class="tabpane" id="pane-courses" hidden></div>
+    <!-- Classes & students (teacher only) -->
+    <div class="tabpane" id="pane-classes" hidden></div>
+    <!-- Teacher settings (teacher only) -->
+    <div class="tabpane" id="pane-teacher" hidden></div>
+    <!-- PIN lock -->
+    <div class="tabpane" id="pane-lock" hidden></div>
+  </div>
+</aside>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* =========================================================
+   Ống Xăm Câu Hỏi — random question picker, fortune-stick style
+   Two tubes (lesson questions, Exit Tickets) · questions grouped by
+   course → unit · auto + manual difficulty · class lists with a
+   teacher-only ZPD priority mode (PIN-locked).
+   ========================================================= */
+
+const STORE_KEY = "ongxam.v3";
+const V2_KEY = "ongxam.v2";
+const V1_KEY = "ongxam.v1";
+const ALL = "__all";
+const NEW = "__new";
+const MAX_VISUAL_STICKS = 72;
+const SHAKE_MS = 1500;
+
+/** Fortune levels: cosmetic only, picked at random with these weights (sum 100). */
+const LEVELS = [
+  { key: "dai",    vi: "Đại Cát",    en: "Great Fortune", weight: 15, color: "#e2b65a",
+    fvi: "Trời thương! Bạn trả lời được ngay.", fen: "The stars are on your side." },
+  { key: "thuong", vi: "Thượng Cát", en: "Good Fortune",  weight: 30, color: "#5fb38c",
+    fvi: "Thuận buồm xuôi gió.",              fen: "Smooth sailing ahead." },
+  { key: "trung",  vi: "Trung Bình", en: "Fair",          weight: 35, color: "#d2a468",
+    fvi: "Bình tĩnh nghĩ một chút là ra.",    fen: "Take a breath, you've got this." },
+  { key: "ha",     vi: "Hạ Hạ",      en: "Bumpy Road",    weight: 20, color: "#9aa7b2",
+    fvi: "Đường hơi gập ghềnh, nhờ bạn bè giúp nhé.", fen: "Bumpy road: a friend can help." }
+];
+
+/** Labels for the exit-ticket question types shown on the slip. */
+const KINDS = {
+  meaning:  "Nghĩa → Từ · Meaning → Word",
+  define:   "Đoán từ · Guess the word",
+  gap:      "Điền từ · Fill the gap",
+  choose:   "Chọn từ · Choose the word",
+  opposite: "Trái nghĩa · Opposite",
+  colloc:   "Kết hợp từ · Collocation",
+  form:     "Dạng từ · Word form",
+  use:      "Dùng từ · Use it"
+};
+
+/** Starting difficulty (1–5) for each exit-ticket type. */
+const KIND_BASE = { choose: 1.5, opposite: 2, meaning: 2, colloc: 2.5, gap: 2.5, define: 3, form: 3.5, use: 3.5 };
+
+/** Recognition-type items: easier to get right, used to rebuild confidence. */
+const RECOGNITION = new Set(["choose", "opposite", "meaning"]);
+
+/** Difficulty labels for 1–5. */
+const DIFF_LABELS = ["", "Rất dễ", "Dễ", "Vừa", "Khó", "Rất khó"];
+
+/** Student support tiers and their starting ability on the 1–5 difficulty scale. */
+const TIERS = {
+  weak:   { vi: "Yếu",        en: "Needs support", base: 1.6 },
+  mid:    { vi: "Trung bình", en: "Average",       base: 2.6 },
+  strong: { vi: "Khá · Giỏi", en: "Strong",        base: 3.6 }
+};
+
+/** Sample Speaking questions shown in the lesson tube until the teacher adds their own. */
+const SAMPLE_QUESTIONS = [
+  "What is your full name? Does it have a special meaning?",
+  "Where do you live? Do you like living there?",
+  "What do you usually do in the evening?",
+  "What is your favourite food? Why do you like it?",
+  "Do you prefer studying in the morning or at night?",
+  "Tell me about your best friend.",
+  "What did you do last weekend?",
+  "What kind of music do you like?",
+  "Do you use social media every day? Which app?",
+  "What would you like to do in the future?"
+];
+
+const U2 = "Unit 2 · House and Home";
+const U3 = "Unit 3 · Hobbies and Leisure";
+const GENERAL = "Chung · General";
+const DEFAULT_COURSE = "Giáo trình GIGI · A2";
+
+/** Built-in vocabulary exit tickets for Unit 2 and Unit 3 (A2 → A2+). [unit, kind, question, answer] */
+const EXIT_BANK = [
+  [U2, "meaning",  "What's the English word? → tầng hầm", "basement"],
+  [U2, "define",   "The room at the top of a house, under the roof, is the ___.", "attic"],
+  [U2, "gap",      "Dad parks the car in the ___ next to the house.", "garage"],
+  [U2, "define",   "A quiet room at home where you read, study or work is a ___.", "study"],
+  [U2, "choose",   "Curtains or blinds? ___ are made of cloth and you pull them across the window.", "Curtains (blinds have thin strips you open and close)"],
+  [U2, "choose",   "Fridge or freezer? You keep ice cream in the ___.", "freezer (fridge = cold, freezer = frozen)"],
+  [U2, "gap",      "You bake cakes and cook pizza in the ___.", "oven"],
+  [U2, "gap",      "Every morning I brush my teeth at the ___.", "sink"],
+  [U2, "meaning",  "What's the English word? → ngăn kéo (tủ)", "drawers (a chest of drawers)"],
+  [U2, "meaning",  "What's the English word? → cái gối", "pillow (My bed has four big pillows.)"],
+  [U2, "choose",   "Homework or housework? Cleaning the kitchen and tidying the rooms is ___.", "housework"],
+  [U2, "opposite", "What is the opposite of 'tidy'?", "messy (or untidy)"],
+  [U2, "opposite", "What is the opposite of 'noisy'?", "quiet"],
+  [U2, "colloc",   "Every weekday morning, my alarm goes ___ at 6:30.", "off (my alarm goes off)"],
+  [U2, "colloc",   "On Sunday I stay in bed until 11 a.m. I have a ___.", "lie-in (have a lie-in)"],
+  [U2, "define",   "A person who lives in the same house as you (not your family) is your ___.", "housemate (roommate = shares your room)"],
+  [U2, "define",   "What does 'catered accommodation' mean?", "Meals are included in the price. (self-catered = you cook or buy your own food)"],
+  [U2, "gap",      "Living on campus is very ___. The university is right there!", "convenient"],
+  [U2, "define",   "The floor of a building at street level (tầng trệt) is the ___ floor.", "ground floor"],
+  [U2, "use",      "Make a sentence about your bedroom with 'comfortable'.", "e.g. My bed is very comfortable. I've got four big pillows."],
+
+  [U3, "meaning",  "What's the English word? → đi bộ đường dài (trên núi, trong rừng)", "hiking"],
+  [U3, "colloc",   "go, play or do? ___ cycling", "go cycling (go + -ing activity)"],
+  [U3, "colloc",   "go, play or do? ___ tennis", "play tennis (play + ball game)"],
+  [U3, "colloc",   "go, play or do? ___ yoga", "do yoga"],
+  [U3, "define",   "Name the activity: a group goes down a very fast river in a rubber boat.", "white water rafting"],
+  [U3, "choose",   "Canoeing or sailing? The wind moves the boat in ___.", "sailing (canoeing = you use a paddle)"],
+  [U3, "opposite", "What is the opposite of 'exciting'?", "boring (or dull)"],
+  [U3, "define",   "Difficult, but in a good and interesting way = ___", "challenging"],
+  [U3, "define",   "Very exciting and a little bit scary = ___", "thrilling"],
+  [U3, "use",      "Finish the sentence: 'I find ___ really relaxing.'", "e.g. I find reading books really relaxing. (find + noun/V-ing + adjective)"],
+  [U3, "gap",      "A ___ snowboarder is paid to do the sport.", "professional"],
+  [U3, "gap",      "Aimee ___ in the gym four or five times a week.", "trains (train = practise your sport)"],
+  [U3, "gap",      "When you are ___, you don't get tired easily when you do sport.", "fit (keep fit / get fit)"],
+  [U3, "gap",      "Can you give me some ___? I don't know what to choose.", "advice (uncountable: NOT 'an advice' / 'advices')"],
+  [U3, "form",     "success → adjective?", "successful (She is a successful snowboarder.)"],
+  [U3, "colloc",   "In football, you kick the ball and ___ a goal.", "score"],
+  [U3, "define",   "In tennis and badminton, you hit the ball with a ___.", "racket"],
+  [U3, "colloc",   "At the weekend I like to ___ ___ with my friends at a café.", "hang out"],
+  [U3, "gap",      "There's a special offer if you ___ the holiday before Friday.", "book (đặt trước)"],
+  [U3, "use",      "Answer in a full sentence: What are you into?", "e.g. I'm really into cycling. / I'm a big fan of football. (into + noun / V-ing)"]
+];
+
+let state = defaultState();
+let busy = false;
+let currentSlipId = null;
+let pendingImport = null;
+let audioCtx = null;
+let noiseBuffer = null;
+let activeTab = "questions";
+let teacherUnlocked = false;
+
+const $ = (sel) => document.querySelector(sel);
+
+/* ---------------- State & storage ---------------- */
+
+/** Build an empty v3 state. */
+function defaultState() {
+  return {
+    v: 3,
+    mode: "lesson",
+    sound: true,
+    courses: [],
+    courseId: "",
+    unitId: ALL,
+    questions: [],
+    drawn: { lesson: [], exit: [] },
+    classes: [],
+    classId: "",
+    studentId: "",
+    history: [],
+    teacher: { pin: "", zpd: true, scope: "weak", step: 0.5 }
+  };
+}
+
+/** Create a short unique id. */
+function makeId() {
+  return Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+}
+
+/** Create a course with the given unit names and add it to state; returns the course. */
+function createCourse(name, unitNames) {
+  const c = { id: makeId(), name, units: (unitNames || []).map((n) => ({ id: makeId(), name: n })) };
+  state.courses.push(c);
+  return c;
+}
+
+/** Find a unit by name inside a course, creating it when missing; returns the unit id. */
+function unitIdByName(course, name) {
+  const clean = String(name || "").trim() || GENERAL;
+  let u = course.units.find((x) => x.name.toLowerCase() === clean.toLowerCase());
+  if (!u) {
+    u = { id: makeId(), name: clean };
+    course.units.push(u);
+  }
+  return u.id;
+}
+
+/** Fill a fresh state with the sample course, lesson samples and the Unit 2–3 exit tickets. */
+function seedFresh(lessonQuestions, lessonDrawn, lessonIsSample) {
+  const c = createCourse(DEFAULT_COURSE, [GENERAL, U2, U3]);
+  const gen = unitIdByName(c, GENERAL);
+  const lessons = lessonQuestions || SAMPLE_QUESTIONS.map((text) => ({ id: makeId(), text }));
+  const sample = lessonQuestions ? !!lessonIsSample : true;
+  lessons.forEach((q) => state.questions.push({ id: q.id, type: "lesson", courseId: c.id, unitId: gen, text: q.text, sample }));
+  EXIT_BANK.forEach(([unit, kind, text, answer]) => {
+    state.questions.push({ id: makeId(), type: "exit", courseId: c.id, unitId: unitIdByName(c, unit), kind, text, answer });
+  });
+  state.drawn.lesson = lessonDrawn || [];
+  state.courseId = c.id;
+}
+
+/** Convert a v2 save (two tubes, exit sets) into the v3 course → unit structure. */
+function migrateV2(s2) {
+  const c = createCourse(DEFAULT_COURSE, [GENERAL]);
+  const lesson = (s2.tubes && s2.tubes.lesson) || {};
+  const exit = (s2.tubes && s2.tubes.exit) || {};
+  const gen = unitIdByName(c, GENERAL);
+  (lesson.questions || []).forEach((q) => state.questions.push({ id: q.id, type: "lesson", courseId: c.id, unitId: gen, text: q.text, sample: !!lesson.sample }));
+  (exit.questions || []).forEach((q) => state.questions.push({
+    id: q.id, type: "exit", courseId: c.id, unitId: unitIdByName(c, q.set || "Khác · Other"), kind: q.kind, text: q.text, answer: q.answer || ""
+  }));
+  state.drawn.lesson = lesson.drawn || [];
+  state.drawn.exit = exit.drawn || [];
+  [...state.drawn.lesson, ...state.drawn.exit].forEach((d) => {
+    if (d.result) {
+      d.hid = makeId();
+      state.history.push({ id: d.hid, s: null, q: d.id, r: d.result, t: Date.now() });
+    }
+  });
+  state.mode = s2.mode === "exit" ? "exit" : "lesson";
+  state.sound = s2.sound !== false;
+  state.courseId = c.id;
+}
+
+/** Load v3 state, migrate v2/v1 saves, or seed a fresh state. Storage failures fall back silently. */
+function loadState() {
+  const read = (key) => { try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; } };
+  const s3 = read(STORE_KEY);
+  state = defaultState();
+  if (s3 && s3.v === 3) {
+    state = Object.assign(defaultState(), s3);
+    state.teacher = Object.assign(defaultState().teacher, s3.teacher || {});
+    state.drawn = Object.assign({ lesson: [], exit: [] }, s3.drawn || {});
+  } else {
+    const s2 = read(V2_KEY);
+    const s1 = s2 ? null : read(V1_KEY);
+    if (s2 && s2.tubes) migrateV2(s2);
+    else if (s1 && Array.isArray(s1.questions)) {
+      seedFresh(s1.questions, s1.drawn, s1.sample);
+      state.sound = s1.sound !== false;
+    } else seedFresh();
+    saveState();
+  }
+  seedUnit5();
+  ensureContext();
+}
+
+
+/** Deck patch: add the GIGI Foundation V1 · Unit 5 · Food questions once, and open that unit the first time. */
+function seedUnit5() {
+  state.deckSeeds = state.deckSeeds || {};
+  if (state.deckSeeds.u5food) return;
+  let c = state.courses.find((x) => x.name === "GIGI Foundation V1");
+  if (!c) c = createCourse("GIGI Foundation V1", [GENERAL]);
+  const u = unitIdByName(c, "Unit 5 \u00b7 Food");
+  ["What is your favourite food from your country? Why do you like it?", "What food is popular in your country?", "Have you ever tried sushi, pizza or dumplings? Which one do you like best?", "Do you eat a lot of fast food? Why or why not?", "How much water do you drink each day?", "Are there any foods you don't like?", "Do you have a sweet tooth? What sweet food do you like?", "Can you cook? What dish can you make?", "Would you like to go to a food festival? What would you like to do there?", "Tell me how to make a dish from your country. What ingredients do you need?", "Are you a fussy eater? Is there any food you never eat?", "Do you prefer eating at home or at a restaurant? Why?"].forEach((text) => state.questions.push({ id: makeId(), type: "lesson", courseId: c.id, unitId: u, text, sample: false }));
+  [["meaning", "What's the English word? → hành lá", "spring onion"], ["meaning", "What's the English word? → tỏi", "garlic"], ["meaning", "What's the English word? → bột mì", "flour"], ["meaning", "What's the English word? → rong biển", "seaweed"], ["meaning", "What's the English word? → tôm", "prawn / shrimp"], ["choose", "Boil or fry? You ___ pasta in hot water.", "boil"], ["choose", "Chop or roll? You ___ the dough into flat cases with a rolling pin.", "roll"], ["gap", "___ the onions into small pieces.", "Chop (or Cut)"], ["gap", "___ the flour and water together in a bowl.", "Mix"], ["gap", "You ___ the dough into half-moon shapes.", "fold"], ["choose", "a, an or some? ___ apple", "an apple"], ["choose", "a, an or some? ___ rice", "some rice (uncountable)"], ["choose", "a, an or some? ___ cabbage", "a cabbage"], ["choose", "much or many? How ___ water do you drink?", "much (water = uncountable)"], ["choose", "much or many? How ___ carrots do we need?", "many (carrots = countable, plural)"], ["choose", "some or any? Do you have ___ onions?", "any (questions and negatives)"], ["define", "Countable or uncountable? → milk", "uncountable (some milk, NOT a milk)"], ["define", "A person who doesn't like many kinds of food is a ___ eater.", "fussy (or picky)"], ["use", "Finish the sentence: 'I have a sweet tooth, so I ...'", "e.g. I eat a lot of cakes and candies."], ["define", "Salmon is a kind of ___ (meat / fish / vegetable).", "fish"], ["gap", "First, ... Then, ... After this, ... ___, serve it to your friends.", "Finally"], ["define", "'Spicy food is not my cup of tea' means ___", "I don't like spicy food very much."], ["define", "If you can't afford something, you don't have enough ___.", "money"], ["define", "Where does your flatmate live?", "in the same flat as you"]].forEach(([kind, text, answer]) => state.questions.push({ id: makeId(), type: "exit", courseId: c.id, unitId: u, kind, text, answer }));
+  state.questions = state.questions.filter((q) => !(q.sample && q.type === "lesson" && q.courseId === c.id));
+  state.courseId = c.id;
+  state.unitId = u;
+  state.deckSeeds.u5food = true;
+  saveState();
+}
+
+/** Save state to localStorage; ignore failures (private window etc.). */
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+}
+
+/** Keep course, unit, class and student selections valid after any change. */
+function ensureContext() {
+  if (!state.courses.length) createCourse("Khóa học của tôi · My course", [GENERAL]);
+  if (!state.courses.some((c) => c.id === state.courseId)) state.courseId = state.courses[0].id;
+  const c = currentCourse();
+  if (state.unitId !== ALL && !c.units.some((u) => u.id === state.unitId)) state.unitId = ALL;
+  const cls = state.classes.find((k) => k.id === state.classId);
+  if (!cls || cls.courseId !== state.courseId) {
+    const first = state.classes.find((k) => k.courseId === state.courseId);
+    state.classId = first ? first.id : "";
+  }
+  const cl = currentClass();
+  if (!cl || !cl.students.some((s) => s.id === state.studentId)) state.studentId = "";
+}
+
+/* ---------------- Lookups ---------------- */
+
+/** The selected course. */
+function currentCourse() {
+  return state.courses.find((c) => c.id === state.courseId) || state.courses[0];
+}
+
+/** The selected class, or null. */
+function currentClass() {
+  return state.classes.find((k) => k.id === state.classId) || null;
+}
+
+/** The student chosen as "Answering", or null. */
+function currentStudent() {
+  const cl = currentClass();
+  return cl ? cl.students.find((s) => s.id === state.studentId) || null : null;
+}
+
+/** Find a student anywhere by id. */
+function studentById(id) {
+  for (const k of state.classes) {
+    const s = k.students.find((x) => x.id === id);
+    if (s) return s;
+  }
+  return null;
+}
+
+/** Name of a unit by id (searching every course). */
+function unitName(id) {
+  for (const c of state.courses) {
+    const u = c.units.find((x) => x.id === id);
+    if (u) return u.name;
+  }
+  return "";
+}
+
+/** True when the Exit Ticket tube is on screen. */
+function isExit() {
+  return state.mode === "exit";
+}
+
+/** Questions of the current tube type in the selected course (all units). */
+function courseQuestions() {
+  return state.questions.filter((q) => q.type === state.mode && q.courseId === state.courseId);
+}
+
+/** Questions of the current tube in the selected course and unit. */
+function activeQuestions() {
+  return courseQuestions().filter((q) => state.unitId === ALL || q.unitId === state.unitId);
+}
+
+/** Drawn records of the current tube. */
+function drawnList() {
+  return state.drawn[state.mode];
+}
+
+/** Drawn records that belong to the active questions, in draw order. */
+function activeDrawn() {
+  const ids = new Set(activeQuestions().map((q) => q.id));
+  return drawnList().filter((d) => ids.has(d.id));
+}
+
+/** Active questions that have not been drawn yet. */
+function remainingQuestions() {
+  const drawn = new Set(drawnList().map((d) => d.id));
+  return activeQuestions().filter((q) => !drawn.has(q.id));
+}
+
+/** Stick number of a question = its 1-based position in the active list. */
+function stickNumber(id) {
+  return activeQuestions().findIndex((q) => q.id === id) + 1;
+}
+
+/* ---------------- Difficulty ---------------- */
+
+/** Keep a number inside [lo, hi]. */
+function clamp(n, lo, hi) {
+  return Math.max(lo, Math.min(hi, n));
+}
+
+/** Guess an exit-ticket type from its wording when no type was given. */
+function guessKind(q) {
+  const t = q.text || "";
+  if (/→/.test(t)) return "meaning";
+  if (/opposite/i.test(t)) return "opposite";
+  if (/\bor\b[^?]*\?/i.test(t) && /___/.test(t)) return "choose";
+  if (/make a sentence|full sentence|finish the sentence/i.test(t)) return "use";
+  if (/___/.test(t)) return "gap";
+  return "define";
+}
+
+/** The type of a question (given or guessed); empty for lesson questions. */
+function kindOf(q) {
+  return q.type === "exit" ? q.kind || guessKind(q) : "";
+}
+
+/** Rule-based difficulty (1–5) from question type, wording and answer length. */
+function heuristicDiff(q) {
+  const text = q.text || "";
+  const words = text.split(/\s+/).filter(Boolean).length;
+  let d;
+  if (q.type === "exit") {
+    d = KIND_BASE[kindOf(q)] || 2.8;
+    const ans = shortAnswer(q.answer || "");
+    if (ans.split(/\s+/).length > 2) d += 0.3;
+    if (/[a-z]{10,}/i.test(ans)) d += 0.4;
+    if (words > 14) d += 0.3;
+  } else {
+    d = 2;
+    if (words > 10) d += 0.5;
+    if (/\b(why|how|describe|explain|compare|opinion|think|would|should|advantages?|disadvantages?)\b/i.test(text)) d += 1;
+    if (/^\s*(do|does|did|is|are|was|were|can|have|has)\b/i.test(text)) d -= 0.5;
+    if (/\btell me about\b/i.test(text)) d += 0.5;
+  }
+  return clamp(d, 1, 5);
+}
+
+/** Count answers per question from the history: Map id → {n, ok}. */
+function questionStats() {
+  const m = new Map();
+  state.history.forEach((h) => {
+    const s = m.get(h.q) || { n: 0, ok: 0 };
+    s.n += 1;
+    if (h.r === "ok") s.ok += 1;
+    m.set(h.q, s);
+  });
+  return m;
+}
+
+/**
+ * Automatic difficulty: the rule-based estimate, blended with the real
+ * success rate once a question has 3+ marked answers (more answers → more weight).
+ */
+function autoDiff(q, stats) {
+  const h = heuristicDiff(q);
+  const s = stats.get(q.id);
+  if (s && s.n >= 3) {
+    const fromData = 1 + (1 - s.ok / s.n) * 4;
+    const w = Math.min(0.7, s.n / 10);
+    return clamp(h * (1 - w) + fromData * w, 1, 5);
+  }
+  return h;
+}
+
+/** Difficulty in use: the teacher's manual value, otherwise the automatic one. */
+function diffOf(q, stats) {
+  return q.manual ? q.manual : autoDiff(q, stats);
+}
+
+/* ---------------- Student ability & ZPD ---------------- */
+
+/**
+ * Estimate a student's ability on the 1–5 difficulty scale: start from the
+ * teacher's tier, then update after every marked answer (Elo-style: a correct
+ * answer on a hard question raises it more; a miss on an easy one lowers it more).
+ */
+function abilityOf(stu, stats, qmap) {
+  let a = (TIERS[stu.tier] || TIERS.mid).base;
+  state.history
+    .filter((h) => h.s === stu.id)
+    .sort((x, y) => x.t - y.t)
+    .forEach((h) => {
+      const q = qmap.get(h.q);
+      if (!q) return;
+      const expected = 1 / (1 + Math.exp(-1.5 * (a - diffOf(q, stats))));
+      a = clamp(a + 0.4 * ((h.r === "ok" ? 1 : 0) - expected), 1, 5);
+    });
+  return a;
+}
+
+/** Map of question id → question. */
+function questionMap() {
+  return new Map(state.questions.map((q) => [q.id, q]));
+}
+
+/** True when the teacher's priority mode should steer the draw for this student. */
+function zpdApplies(stu) {
+  return !!(state.teacher.zpd && stu && (state.teacher.scope === "all" || stu.tier === "weak"));
+}
+
+/**
+ * Plan a ZPD draw for one student: target slightly above their ability
+ * (or slightly below, with recognition items favoured, right after a miss),
+ * then weight every remaining question by closeness to that target.
+ */
+function zpdPlan(stu, pool, stats) {
+  const qmap = questionMap();
+  const a = abilityOf(stu, stats, qmap);
+  const mine = state.history.filter((h) => h.s === stu.id).sort((x, y) => y.t - x.t);
+  const lastMiss = !!(mine[0] && mine[0].r === "retry");
+  const target = clamp(lastMiss ? a - 0.3 : a + Number(state.teacher.step || 0.5), 1, 5);
+  const gotRight = new Set(mine.filter((h) => h.r === "ok").map((h) => h.q));
+  const missed = new Set(mine.filter((h) => h.r === "retry").map((h) => h.q));
+  const items = pool.map((q) => {
+    const d = diffOf(q, stats);
+    let w = Math.exp(-((d - target) ** 2) / (2 * 0.6 * 0.6));
+    if ((lastMiss || a < 2.2) && RECOGNITION.has(kindOf(q))) w *= 1.6;
+    if (missed.has(q.id)) w *= 1.4;
+    if (gotRight.has(q.id)) w *= 0.35;
+    return { q, d, w: Math.max(w, 0.002) };
+  });
+  return { a, target, lastMiss, items };
+}
+
+/** Pick one question with probability proportional to its weight. */
+function weightedPick(items) {
+  const total = items.reduce((s, i) => s + i.w, 0);
+  let r = Math.random() * total;
+  for (const i of items) {
+    r -= i.w;
+    if (r <= 0) return i.q;
+  }
+  return items[items.length - 1].q;
+}
+
+/* ---------------- Helpers ---------------- */
+
+/**
+ * Deterministic pseudo-random number in [0, 1) for a seed,
+ * so stick positions stay stable between renders.
+ */
+function seeded(seed) {
+  const x = Math.sin(seed * 9301 + 49297) * 233280;
+  return x - Math.floor(x);
+}
+
+/** Wait for a number of milliseconds. */
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** True when the viewer asked the system to reduce motion. */
+function reducedMotion() {
+  return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/** Pad a number to two digits (7 -> "07"). */
+function pad(n) {
+  return String(n).padStart(2, "0");
+}
+
+/** Escape text before inserting it as HTML. */
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+/** Find a level definition by its key. */
+function levelOf(key) {
+  return LEVELS.find((l) => l.key === key) || LEVELS[2];
+}
+
+/** Pick a fortune level at random using the configured weights. */
+function pickLevel() {
+  const r = Math.random() * 100;
+  let acc = 0;
+  for (const l of LEVELS) {
+    acc += l.weight;
+    if (r < acc) return l.key;
+  }
+  return LEVELS[LEVELS.length - 1].key;
+}
+
+/** Short form of an answer for the review list ("freezer (fridge…)" -> "freezer"). */
+function shortAnswer(a) {
+  return String(a || "").split(/\s[(—–]|\s-\s|\.\s/)[0].trim();
+}
+
+/** Given name for chips (Vietnamese names: the last word). */
+function shortName(n) {
+  const parts = String(n || "").trim().split(/\s+/);
+  return parts[parts.length - 1] || "";
+}
+
+/** Show a short bilingual message at the bottom of the screen. */
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { t.hidden = true; }, 2600);
+}
+
+/**
+ * Two-step confirm for destructive buttons: the first click arms the button,
+ * the second click within 3 seconds runs the action.
+ */
+function armConfirm(btn, action) {
+  if (btn.classList.contains("armed")) {
+    btn.classList.remove("armed");
+    btn.innerHTML = btn.dataset.orig;
+    action();
+    return;
+  }
+  btn.dataset.orig = btn.innerHTML;
+  btn.classList.add("armed");
+  btn.innerHTML = btn.classList.contains("ibtn") ? "Xoá?" : '<span class="vi">Bấm lần nữa để chắc chắn</span><span class="en">Click again to confirm</span>';
+  setTimeout(() => {
+    if (btn.isConnected && btn.classList.contains("armed")) {
+      btn.classList.remove("armed");
+      btn.innerHTML = btn.dataset.orig;
+    }
+  }, 3000);
+}
+
+/* ---------------- Sound ---------------- */
+
+/** Return a running AudioContext (created on first use), or null if sound is off. */
+function getAudio() {
+  if (!state.sound) return null;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    if (!noiseBuffer) {
+      const len = Math.floor(audioCtx.sampleRate * 0.06);
+      noiseBuffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+      const data = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 5);
+    }
+    return audioCtx;
+  } catch (e) {
+    return null;
+  }
+}
+
+/** Play one bamboo "clack" at time t with a given pitch and volume. */
+function clack(ctx, t, freq, gain) {
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuffer;
+  const bp = ctx.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.frequency.value = freq;
+  bp.Q.value = 7;
+  const g = ctx.createGain();
+  g.gain.value = gain;
+  src.connect(bp).connect(g).connect(ctx.destination);
+  src.start(t);
+}
+
+/** Rattle of sticks hitting each other while the tube shakes. */
+function playShake(ms) {
+  const ctx = getAudio();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const hits = Math.round(ms / 70);
+  for (let i = 0; i < hits; i++) {
+    clack(ctx, now + (i * ms) / hits / 1000 + Math.random() * 0.03, 1600 + Math.random() * 2200, 0.5 + Math.random() * 0.6);
+  }
+}
+
+/** Two low knocks as the stick lands on the altar. */
+function playDrop() {
+  const ctx = getAudio();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  clack(ctx, now, 750, 1.4);
+  clack(ctx, now + 0.12, 900, 0.6);
+}
+
+/* ---------------- Stage rendering ---------------- */
+
+/** Reflect the current mode on the page (colours, toggle buttons, placeholders). */
+function renderMode() {
+  document.body.dataset.mode = state.mode;
+  document.querySelectorAll(".mode").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode)));
+  $("#bulkInput").placeholder = isExit()
+    ? "What's the English word? → nhà bếp | kitchen\nYou sleep in the ___. | bedroom | 1"
+    : "Where do you live?\nWhy do people like living in big cities? | 4";
+}
+
+/** Fill the Course / Class / Answering selectors on the stage. */
+function renderContext() {
+  $("#courseSel").innerHTML = state.courses.map((c) => `<option value="${c.id}"${c.id === state.courseId ? " selected" : ""}>${esc(c.name)}</option>`).join("");
+  const classes = state.classes.filter((k) => k.courseId === state.courseId);
+  $("#classSel").innerHTML = `<option value="">— Không chọn lớp · No class —</option>` +
+    classes.map((k) => `<option value="${k.id}"${k.id === state.classId ? " selected" : ""}>${esc(k.name)}</option>`).join("");
+  const cl = currentClass();
+  $("#studentSel").innerHTML = `<option value="">— Không chỉ định · Anyone —</option>` +
+    (cl ? cl.students.map((s) => `<option value="${s.id}"${s.id === state.studentId ? " selected" : ""}>${esc(s.name)}</option>`).join("") : "");
+  $("#studentSel").disabled = !cl || !cl.students.length;
+}
+
+/** Draw the unit chips for the selected course (counts follow the current tube). */
+function renderUnits() {
+  const c = currentCourse();
+  const qs = courseQuestions();
+  const count = (id) => qs.filter((q) => q.unitId === id).length;
+  const chips = c.units.map((u) => `<button class="set" type="button" data-unit="${u.id}" aria-pressed="${state.unitId === u.id}">${esc(u.name)}<b>${count(u.id)}</b></button>`);
+  chips.push(`<button class="set" type="button" data-unit="${ALL}" aria-pressed="${state.unitId === ALL}">Tất cả · All<b>${qs.length}</b></button>`);
+  $("#units").innerHTML = chips.join("");
+}
+
+/** Draw the remaining sticks inside the tube (capped for very large banks). */
+function renderTube() {
+  const box = $("#sticks");
+  box.innerHTML = "";
+  const remaining = remainingQuestions().length;
+  const n = Math.min(remaining, MAX_VISUAL_STICKS);
+  const width = n > 45 ? 5 : n > 25 ? 7 : 9;
+  // Each stick pivots at its foot inside the tube. Pick where it crosses the
+  // mouth (kept inside the rim, with room for the jiggle) and a narrower foot
+  // position, then lean the stick between the two so it fans out but never
+  // pokes through the side of the tube.
+  const PIVOT_TO_MOUTH = 208;
+  for (let i = 0; i < n; i++) {
+    const t = n === 1 ? 0.5 : i / (n - 1);
+    const cross = Math.max(38, Math.min(182, 38 + t * 144 + (seeded(i) - 0.5) * 10));
+    const left = Math.max(66, Math.min(154, 72 + t * 76 + (seeded(i + 3) - 0.5) * 14));
+    const rot = (Math.atan((cross - left) / PIVOT_TO_MOUTH) * 180) / Math.PI;
+    const protrude = 40 + seeded(i + 7) * 50;
+    const el = document.createElement("div");
+    el.className = "stick";
+    el.style.cssText = `left:${left.toFixed(1)}px;height:${208 + protrude}px;width:${width}px;--rot:${rot.toFixed(1)}deg;--d:${(-seeded(i + 11) * 0.3).toFixed(2)}s`;
+    box.appendChild(el);
+  }
+  $("#emptyTube").hidden = remaining > 0 || activeQuestions().length === 0;
+}
+
+/** Update the counter line and enable/disable the draw button. */
+function renderCounter() {
+  const total = activeQuestions().length;
+  const left = remainingQuestions().length;
+  const c = $("#counter");
+  const unit = isExit() ? ["vé", "tickets"] : ["quẻ", "sticks"];
+  if (total === 0) {
+    c.innerHTML = "Chưa có câu hỏi trong unit này · No questions in this unit yet";
+  } else {
+    c.innerHTML = `Còn <b>${left}</b> / ${total} ${unit[0]} · ${left} of ${total} ${unit[1]} left &nbsp;·&nbsp; <span class="kbd">Space</span>`;
+  }
+  $("#drawBtn").disabled = left === 0;
+  $("#qCount").textContent = courseQuestions().length;
+  $("#sampleNote").hidden = !(state.mode === "lesson" && activeQuestions().some((q) => q.sample));
+}
+
+/** Show drawn sticks as chips with marks, the tally and (for Exit Tickets) the review list. */
+function renderTray() {
+  const drawn = activeDrawn();
+  const chips = $("#chips");
+  $("#trayTitle").textContent = isExit() ? "Vé đã rút · Drawn tickets" : "Quẻ đã rút · Drawn sticks";
+  if (!drawn.length) {
+    chips.innerHTML = '<p class="tray-empty">Chưa rút que nào. · Nothing drawn yet.</p>';
+  } else {
+    chips.innerHTML = drawn.map((d) => {
+      const lv = levelOf(d.level);
+      const res = d.result ? `<span class="res">${d.result === "ok" ? "✓" : "↻"}</span>` : "";
+      const stu = d.studentId ? studentById(d.studentId) : null;
+      return `<button class="chip" type="button" data-id="${d.id}" data-result="${d.result || ""}" title="${esc(lv.vi)} · ${esc(lv.en)}">
+        <span class="no">${pad(stickNumber(d.id))}</span>
+        <span class="dot" style="background:${lv.color}"></span>${stu ? `<span class="who">${esc(shortName(stu.name))}</span>` : esc(lv.vi)}${res}</button>`;
+    }).join("");
+  }
+  $("#resetBtn").disabled = drawn.length === 0;
+
+  const ok = drawn.filter((d) => d.result === "ok").length;
+  const retry = drawn.filter((d) => d.result === "retry");
+  const none = drawn.length - ok - retry.length;
+  $("#tally").innerHTML = drawn.length
+    ? `<span class="ok">✓ Được · Got it: <b>${ok}</b></span><span class="retry">↻ Cần ôn · Review: <b>${retry.length}</b></span><span class="none">Chưa chấm · Not marked: ${none}</span>`
+    : "";
+  const review = $("#review");
+  if (isExit() && retry.length) {
+    const qmap = questionMap();
+    const words = retry.map((d) => {
+      const q = qmap.get(d.id);
+      const stu = d.studentId ? studentById(d.studentId) : null;
+      return `<b>${pad(stickNumber(d.id))}</b> ${esc(shortAnswer(q && q.answer) || (q && q.text) || "")}${stu ? ` (${esc(shortName(stu.name))})` : ""}`;
+    });
+    review.innerHTML = `<span class="lbl">Từ cần ôn buổi sau · Words to review:</span> ${words.join(" · ")}`;
+    review.hidden = false;
+  } else {
+    review.hidden = true;
+  }
+}
+
+/** Re-render every part of the page that depends on state. */
+function renderAll() {
+  ensureContext();
+  renderMode();
+  renderContext();
+  renderUnits();
+  renderTube();
+  renderCounter();
+  renderTray();
+  if (!$("#panel").hidden) renderPanel();
+}
+
+/* ---------------- Drawing ---------------- */
+
+/** Shake the tube, let one stick fly out, then open its slip. */
+async function draw() {
+  if (busy) return;
+  const pool = remainingQuestions();
+  if (!pool.length) {
+    toast(isExit() ? "Hết vé rồi · No tickets left" : "Hết quẻ rồi · No sticks left");
+    return;
+  }
+  busy = true;
+  hideSlip();
+  $("#fallen").hidden = true;
+  $("#drawBtn").disabled = true;
+
+  const stu = currentStudent();
+  const picked = zpdApplies(stu)
+    ? weightedPick(zpdPlan(stu, pool, questionStats()).items)
+    : pool[Math.floor(Math.random() * pool.length)];
+  const level = pickLevel();
+  const shakeMs = reducedMotion() ? 500 : SHAKE_MS;
+
+  $("#tube").classList.add("shaking");
+  $("#sticks").classList.add("jiggle");
+  playShake(shakeMs);
+  await wait(shakeMs);
+  $("#tube").classList.remove("shaking");
+  $("#sticks").classList.remove("jiggle");
+
+  const visual = [...document.querySelectorAll("#sticks .stick")];
+  const chosen = visual[Math.floor(Math.random() * visual.length)];
+  if (chosen) {
+    chosen.classList.add("rise");
+    await wait(reducedMotion() ? 80 : 560);
+    chosen.style.opacity = "0";
+  }
+
+  drawnList().push({ id: picked.id, level, studentId: stu ? stu.id : "" });
+  saveState();
+  showFallen(stickNumber(picked.id));
+  playDrop();
+  await wait(reducedMotion() ? 120 : 800);
+
+  renderAll();
+  openSlip(picked.id, true);
+  busy = false;
+}
+
+/** Animate the drawn stick dropping onto the altar with its number. */
+function showFallen(no) {
+  const f = $("#fallen");
+  $("#fallenNo").textContent = `Số ${pad(no)}`;
+  f.hidden = false;
+  f.classList.remove("drop");
+  void f.offsetWidth;
+  f.classList.add("drop");
+}
+
+/** Open the slip for a drawn question; animate the unroll when asked. */
+function openSlip(id, animate) {
+  const q = state.questions.find((x) => x.id === id);
+  const d = drawnList().find((x) => x.id === id);
+  if (!q || !d) return;
+  const lv = levelOf(d.level);
+  currentSlipId = id;
+  $("#slipNo").textContent = pad(stickNumber(id));
+  $("#slipSeal").dataset.level = lv.key;
+  $("#sealVi").textContent = lv.vi;
+  $("#sealEn").textContent = lv.en;
+  $("#slipQ").textContent = q.text;
+  $("#fortuneVi").textContent = lv.fvi;
+  $("#fortuneEn").textContent = lv.fen;
+  $("#slipKind").textContent = isExit() ? (KINDS[q.kind] || KINDS[kindOf(q)] || "Câu hỏi · Question") : "Câu hỏi · Question";
+  $("#slipSet").textContent = unitName(q.unitId);
+  const stu = d.studentId ? studentById(d.studentId) : null;
+  $("#slipStudent").hidden = !stu;
+  $("#slipStudent").innerHTML = stu ? `Người trả lời · Answering: <b>${esc(stu.name)}</b>` : "";
+  $("#answerText").textContent = q.answer || "";
+  $("#answerBox").hidden = true;
+  $("#showAnswer").hidden = !q.answer;
+  renderMarks(d);
+  $("#againBtn").disabled = remainingQuestions().length === 0;
+  const slip = $("#slip");
+  slip.classList.remove("unroll");
+  if (animate) { void slip.offsetWidth; slip.classList.add("unroll"); }
+  $("#slipLayer").hidden = false;
+  $("#againBtn").focus({ preventScroll: true });
+}
+
+/** Show the answer on the open slip. */
+function revealAnswer() {
+  if ($("#slipLayer").hidden || $("#showAnswer").hidden) return;
+  $("#answerBox").hidden = false;
+  $("#showAnswer").hidden = true;
+}
+
+/** Update the Got it / Needs review buttons for a drawn record. */
+function renderMarks(d) {
+  $("#markOk").setAttribute("aria-pressed", String(d.result === "ok"));
+  $("#markRetry").setAttribute("aria-pressed", String(d.result === "retry"));
+}
+
+/**
+ * Mark the open slip as answered or needing review (click again to clear).
+ * Each mark is also kept in the answer history that drives auto difficulty
+ * and each student's ability estimate.
+ */
+function markResult(result) {
+  const d = drawnList().find((x) => x.id === currentSlipId);
+  if (!d) return;
+  d.result = d.result === result ? undefined : result;
+  if (d.hid) state.history = state.history.filter((h) => h.id !== d.hid);
+  if (d.result) {
+    d.hid = makeId();
+    state.history.push({ id: d.hid, s: d.studentId || null, q: d.id, r: d.result, t: Date.now() });
+  } else {
+    d.hid = undefined;
+  }
+  saveState();
+  renderMarks(d);
+  renderTray();
+}
+
+/** Hide the slip. */
+function hideSlip() {
+  $("#slipLayer").hidden = true;
+  currentSlipId = null;
+}
+
+/** Put one drawn stick back into the tube so it can be drawn again (its mark stays in the history). */
+function putBack(id) {
+  state.drawn[state.mode] = drawnList().filter((d) => d.id !== id);
+  saveState();
+  hideSlip();
+  $("#fallen").hidden = true;
+  renderAll();
+  toast("Đã bỏ que vào lại · Stick returned");
+}
+
+/** Return every drawn stick of the active list to the tube. */
+function resetDraws() {
+  const ids = new Set(activeQuestions().map((q) => q.id));
+  state.drawn[state.mode] = drawnList().filter((d) => !ids.has(d.id));
+  saveState();
+  hideSlip();
+  $("#fallen").hidden = true;
+  renderAll();
+  toast("Đã bỏ hết vào lại · All sticks returned");
+}
+
+/** Switch between the lesson tube and the Exit Ticket tube. */
+function setMode(mode) {
+  if (busy || mode === state.mode) return;
+  state.mode = mode;
+  hideSlip();
+  $("#fallen").hidden = true;
+  pendingImport = null;
+  $("#importBox").hidden = true;
+  saveState();
+  renderAll();
+}
+
+/* ---------------- Adding & importing questions ---------------- */
+
+/**
+ * Clean one line of pasted text: trims it and removes leading
+ * numbering or bullets such as "1.", "2)", "Q3:", "-", "•".
+ */
+function cleanLine(line) {
+  return String(line)
+    .replace(/^\s*(?:[-•*]\s+|(?:q|câu|cau)?\s*\d+\s*[.):\-]\s*)/i, "")
+    .trim();
+}
+
+/** Split a pasted line "question | answer | 3" (or tab-separated) into an item. */
+function splitLine(line) {
+  const parts = String(line).split(/\s*\|\s*|\t/).map((p) => p.trim()).filter((p, i) => i === 0 || p);
+  let manual = 0;
+  if (parts.length > 1 && /^[1-5]$/.test(parts[parts.length - 1])) manual = Number(parts.pop());
+  return { text: cleanLine(parts[0] || ""), answer: parts.slice(1).join(" "), manual };
+}
+
+/** Unit id chosen in the Add form (creating a new unit when asked). */
+function chosenUnitId() {
+  const c = currentCourse();
+  const v = $("#unitAdd").value;
+  if (v === NEW) {
+    const id = unitIdByName(c, $("#unitNew").value.trim() || "Unit mới · New unit");
+    $("#unitNew").value = "";
+    $("#unitAdd").value = id;
+    return id;
+  }
+  if (c.units.some((u) => u.id === v)) return v;
+  return unitIdByName(c, GENERAL);
+}
+
+/**
+ * Add items ({text, answer?, manual?, kind?, unitName?}) to the current tube and course.
+ * Mode "replace" first removes this tube's questions from every target unit.
+ * Lesson sample questions disappear when the teacher adds real ones.
+ */
+function addItems(items, mode) {
+  const c = currentCourse();
+  const fallbackUnit = chosenUnitId();
+  const clean = items
+    .map((it) => ({
+      text: cleanLine(it.text || ""), answer: (it.answer || "").trim(), manual: Number(it.manual) || 0, kind: it.kind,
+      unitId: it.unitName ? unitIdByName(c, it.unitName) : fallbackUnit
+    }))
+    .filter((it) => it.text.length > 0);
+  if (!clean.length) {
+    toast("Không có câu nào để thêm · Nothing to add");
+    return 0;
+  }
+  const removeIds = new Set();
+  if (state.mode === "lesson") state.questions.forEach((q) => { if (q.sample) removeIds.add(q.id); });
+  if (mode === "replace") {
+    const targets = new Set(clean.map((it) => it.unitId));
+    state.questions.forEach((q) => { if (q.type === state.mode && targets.has(q.unitId)) removeIds.add(q.id); });
+  }
+  if (removeIds.size) {
+    state.questions = state.questions.filter((q) => !removeIds.has(q.id));
+    state.drawn[state.mode] = drawnList().filter((d) => !removeIds.has(d.id));
+  }
+  clean.forEach((it) => {
+    const q = { id: makeId(), type: state.mode, courseId: c.id, unitId: it.unitId, text: it.text };
+    if (isExit()) q.answer = it.answer;
+    if (it.manual >= 1 && it.manual <= 5) q.manual = it.manual;
+    if (it.kind) q.kind = it.kind;
+    state.questions.push(q);
+  });
+  const units = [...new Set(clean.map((it) => it.unitId))];
+  if (state.unitId !== ALL || units.length === 1) state.unitId = units.length === 1 ? units[0] : ALL;
+  $("#fallen").hidden = true;
+  saveState();
+  renderAll();
+  toast(`Đã thêm ${clean.length} câu · Added ${clean.length} question${clean.length > 1 ? "s" : ""}`);
+  return clean.length;
+}
+
+/** Delete one question (and its drawn stick, if any). */
+function deleteQuestion(id) {
+  state.questions = state.questions.filter((q) => q.id !== id);
+  state.drawn.lesson = state.drawn.lesson.filter((d) => d.id !== id);
+  state.drawn.exit = state.drawn.exit.filter((d) => d.id !== id);
+  saveState();
+  renderAll();
+}
+
+/** Delete every question in the current list (this unit, or the whole course for this tube). */
+function clearActive() {
+  const ids = new Set(activeQuestions().map((q) => q.id));
+  state.questions = state.questions.filter((q) => !ids.has(q.id));
+  state.drawn[state.mode] = drawnList().filter((d) => !ids.has(d.id));
+  $("#fallen").hidden = true;
+  saveState();
+  renderAll();
+}
+
+/** Swap a list row into edit mode with inputs and save/cancel buttons. */
+function startEdit(li) {
+  const id = li.dataset.id;
+  const q = state.questions.find((x) => x.id === id);
+  if (!q || li.querySelector(".edit")) return;
+  const units = currentCourse().units;
+  const box = document.createElement("div");
+  box.className = "edit";
+  box.innerHTML = `<textarea rows="2" id="edit-${id}" aria-label="Câu hỏi · Question">${esc(q.text)}</textarea>
+    ${isExit() ? `<input type="text" id="edit-a-${id}" aria-label="Đáp án · Answer" placeholder="Đáp án · Answer" value="${esc(q.answer || "")}">` : ""}
+    <select id="edit-u-${id}" aria-label="Unit">${units.map((u) => `<option value="${u.id}"${u.id === q.unitId ? " selected" : ""}>${esc(u.name)}</option>`).join("")}</select>
+    <div class="row">
+      <button class="gbtn sm" type="button" data-act="save">Lưu · Save</button>
+      <button class="gbtn ghost sm" type="button" data-act="cancel">Huỷ · Cancel</button>
+    </div>`;
+  li.appendChild(box);
+  box.querySelector("textarea").focus();
+}
+
+/** Save an edited question from its row. */
+function saveEdit(li) {
+  const id = li.dataset.id;
+  const val = li.querySelector("textarea").value.trim();
+  const q = state.questions.find((x) => x.id === id);
+  if (q && val) {
+    q.text = val;
+    const a = li.querySelector('input[type="text"]');
+    if (a) q.answer = a.value.trim();
+    const u = li.querySelector("select[id^='edit-u-']");
+    if (u) q.unitId = u.value;
+    delete q.sample;
+    saveState();
+  }
+  renderAll();
+}
+
+/**
+ * Turn spreadsheet rows into items. Lesson tube: the longest text cell is the
+ * question. Exit tube: first text cell = question, second = answer. A cell
+ * 1–5 after the question sets the difficulty. Header rows and leading row
+ * numbers are skipped.
+ */
+function rowsToItems(rows, exit) {
+  const header = /^(câu hỏi|cau hoi|question|questions|câu|stt|no\.?|#|đáp án|answer|độ khó|difficulty)$/i;
+  const isNum = (c) => /^\d+([.,]\d+)?$/.test(c);
+  const out = [];
+  rows.forEach((row) => {
+    const cells = (Array.isArray(row) ? row : [row]).map((c) => (c == null ? "" : String(c).trim()));
+    const first = cells.findIndex((c) => c && !isNum(c));
+    if (first < 0) return;
+    const after = cells.slice(first);
+    const texts = after.filter((c) => c && !isNum(c));
+    const dcell = after.find((c) => /^[1-5]$/.test(c));
+    const manual = dcell ? Number(dcell) : 0;
+    if (exit) {
+      if (header.test(texts[0])) return;
+      out.push({ text: texts[0], answer: texts[1] || "", manual });
+    } else {
+      const best = texts.reduce((a, b) => (b.length > a.length ? b : a));
+      if (header.test(best)) return;
+      out.push({ text: best, manual });
+    }
+  });
+  return out;
+}
+
+/** True for default sheet names ("Sheet1", "Trang tính1") that should not become units. */
+function genericSheet(name) {
+  return /^(sheet|trang tính|trang tinh|trang)\s*\d*$/i.test(String(name || "").trim());
+}
+
+/** Read an uploaded question file into named sheets of items (unitName null = use the chosen unit). */
+async function readQuestionFile(file) {
+  const exit = isExit();
+  const ext = file.name.split(".").pop().toLowerCase();
+  if (ext === "txt") {
+    const lines = (await file.text()).split(/\r?\n/).filter((l) => l.trim());
+    return [{ name: null, items: lines.map((l) => (exit ? splitLine(l) : Object.assign(splitLine(l), { answer: "" }))).filter((it) => it.text) }];
+  }
+  const wb = await readWorkbook(file, ext);
+  const many = wb.SheetNames.length > 1;
+  return wb.SheetNames.map((name) => ({
+    name: ext === "csv" || (!many && genericSheet(name)) || genericSheet(name) ? null : name,
+    items: rowsToItems(XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, blankrows: false }), exit)
+  })).filter((s) => s.items.length);
+}
+
+/** Open an Excel or CSV file with SheetJS. */
+async function readWorkbook(file, ext) {
+  if (!window.XLSX) throw new Error("Không tải được thư viện đọc Excel. Hãy thử lại hoặc dùng .txt. · The Excel reader didn't load; try again or use .txt.");
+  if (ext === "csv") return XLSX.read(await file.text(), { type: "string" });
+  if (ext === "xlsx" || ext === "xls") return XLSX.read(await file.arrayBuffer(), { type: "array" });
+  throw new Error("Chỉ nhận .xlsx, .xls, .csv, .txt · Only .xlsx, .xls, .csv or .txt files.");
+}
+
+/** Show the import preview: which unit each sheet will go into. */
+function renderImport() {
+  const box = $("#importBox");
+  if (!pendingImport || !pendingImport.length) { box.hidden = true; return; }
+  const fallback = $("#unitAdd").selectedOptions[0] ? $("#unitAdd").selectedOptions[0].textContent : "";
+  const total = pendingImport.reduce((n, s) => n + s.items.length, 0);
+  $("#importInfo").textContent = `Tìm thấy ${total} câu, vào khóa "${currentCourse().name}" · Found ${total} questions`;
+  $("#importPreview").innerHTML = pendingImport.map((s) => {
+    const it = s.items[0];
+    return `<li><b>${esc(s.name || fallback)}</b>: ${s.items.length} câu · e.g. ${esc(it.text)}${it.answer ? " → " + esc(it.answer) : ""}</li>`;
+  }).join("");
+  box.hidden = false;
+}
+
+/** Handle a question file chosen in the upload input. */
+async function onFileChosen(e) {
+  const file = e.target.files && e.target.files[0];
+  const err = $("#fileError");
+  err.hidden = true;
+  pendingImport = null;
+  $("#importBox").hidden = true;
+  if (!file) return;
+  try {
+    const sheets = await readQuestionFile(file);
+    if (!sheets.length) throw new Error("File không có câu hỏi nào. · No questions found in this file.");
+    pendingImport = sheets;
+    renderImport();
+  } catch (ex) {
+    err.textContent = ex.message || "Không đọc được file. · Couldn't read this file.";
+    err.hidden = false;
+  }
+}
+
+/** Apply the pending import in "append" or "replace" mode. */
+function applyImport(mode) {
+  if (!pendingImport) return;
+  const items = [];
+  pendingImport.forEach((s) => s.items.forEach((it) => items.push(Object.assign({ unitName: s.name }, it))));
+  addItems(items, mode);
+  pendingImport = null;
+  $("#importBox").hidden = true;
+  $("#fileInput").value = "";
+}
+
+/* ---------------- Panel: shell & tabs ---------------- */
+
+/** Open the management panel on a tab. */
+function openPanel(tab) {
+  activeTab = tab || activeTab || "questions";
+  $("#panel").hidden = false;
+  $("#backdrop").hidden = false;
+  renderPanel();
+}
+
+/** Close the panel and lock the teacher-only tabs again. */
+function closePanel() {
+  $("#panel").hidden = true;
+  $("#backdrop").hidden = true;
+  teacherUnlocked = false;
+}
+
+/** Show the active tab (or the PIN screen for a locked tab). */
+function renderPanel() {
+  const locked = (activeTab === "classes" || activeTab === "teacher") && !teacherUnlocked;
+  document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.tab === activeTab)));
+  ["questions", "courses", "classes", "teacher"].forEach((k) => { $("#pane-" + k).hidden = locked || k !== activeTab; });
+  $("#pane-lock").hidden = !locked;
+  if (locked) return renderLock();
+  if (activeTab === "questions") renderQuestionsPane();
+  else if (activeTab === "courses") renderCoursesPane();
+  else if (activeTab === "classes") renderClassesPane();
+  else renderTeacherPane();
+}
+
+/* ---------------- Panel: questions ---------------- */
+
+/** Render the Questions tab: unit picker, difficulty summary and the list. */
+function renderQuestionsPane() {
+  const c = currentCourse();
+  const list = activeQuestions();
+  const stats = questionStats();
+  const drawn = new Set(drawnList().map((d) => d.id));
+  const prev = $("#unitAdd").value;
+  const pick = prev && (prev === NEW || c.units.some((u) => u.id === prev)) ? prev : (state.unitId !== ALL ? state.unitId : (c.units[0] && c.units[0].id));
+  $("#unitAdd").innerHTML = c.units.map((u) => `<option value="${u.id}">${esc(u.name)}</option>`).join("") + `<option value="${NEW}">＋ Unit mới · New unit…</option>`;
+  if (pick) $("#unitAdd").value = pick;
+  $("#unitNewWrap").hidden = $("#unitAdd").value !== NEW;
+
+  $("#listCount").textContent = list.length;
+  $("#sampleBanner").hidden = !(state.mode === "lesson" && list.some((q) => q.sample));
+  const oneUnit = state.unitId !== ALL;
+  $("#clearAll").innerHTML = oneUnit ? '<span class="vi">Xoá câu của unit này</span><span class="en">Delete this unit\'s questions</span>' : '<span class="vi">Xoá hết câu của khóa</span><span class="en">Delete all in course</span>';
+  $("#clearAll").disabled = list.length === 0;
+  $("#listHint").textContent = `${c.name} › ${oneUnit ? unitName(state.unitId) : "Tất cả unit · All units"} · ${isExit() ? "Vé ra về" : "Câu hỏi bài học"}`;
+
+  const buckets = [0, 0, 0, 0, 0, 0];
+  list.forEach((q) => { buckets[Math.round(diffOf(q, stats))] += 1; });
+  $("#diffSummary").innerHTML = [1, 2, 3, 4, 5].map((d) => `<span><i class="ddot" data-d="${d}"></i>${DIFF_LABELS[d]}: <b>${buckets[d]}</b></span>`).join("");
+
+  if (!list.length) {
+    $("#qlist").innerHTML = '<li><span></span><span class="t hint">Danh sách trống. Thêm câu ở trên. · The list is empty.</span><span></span></li>';
+    return;
+  }
+  $("#qlist").innerHTML = list.map((q, i) => {
+    const auto = autoDiff(q, stats);
+    const d = Math.round(diffOf(q, stats));
+    const s = stats.get(q.id);
+    const opts = `<option value="0"${q.manual ? "" : " selected"}>Tự động: ${Math.round(auto)} · ${DIFF_LABELS[Math.round(auto)]}</option>` +
+      [1, 2, 3, 4, 5].map((n) => `<option value="${n}"${q.manual === n ? " selected" : ""}>${n} · ${DIFF_LABELS[n]}</option>`).join("");
+    return `<li data-id="${q.id}">
+      <span class="n">${pad(i + 1)}</span>
+      <span class="t">${esc(q.text)}${drawn.has(q.id) ? '<span class="tag">đã rút · drawn</span>' : ""}${isExit() && q.answer ? `<span class="ans">→ ${esc(q.answer)}</span>` : ""}
+        <span class="meta"><span><i class="ddot" data-d="${d}"></i> ${q.manual ? "Đã chỉnh tay" : "Tự động"}</span>${state.unitId === ALL ? `<span>${esc(unitName(q.unitId))}</span>` : ""}${s ? `<span>${s.ok}/${s.n} đúng</span>` : ""}</span></span>
+      <span class="acts">
+        <select class="dsel${q.manual ? " manual" : ""}" id="diff-${q.id}" data-act="diff" aria-label="Độ khó · Difficulty">${opts}</select>
+        <button class="ibtn" type="button" data-act="edit">Sửa</button>
+        <button class="ibtn del" type="button" data-act="del" aria-label="Xoá · Delete">✕</button>
+      </span>
+    </li>`;
+  }).join("");
+}
+
+/* ---------------- Panel: courses & units ---------------- */
+
+/** Render the Courses tab: every course with its own editable unit list. */
+function renderCoursesPane() {
+  const count = (uid) => state.questions.filter((q) => q.unitId === uid).length;
+  let html = `<div class="section"><h3>Khóa học <span class="en">· Courses</span></h3>
+    <p class="hint">Mỗi khóa học có bộ unit riêng; lớp học gắn với một khóa. Sửa tên trực tiếp trong ô. · Each course has its own units; classes belong to a course.</p></div>`;
+  state.courses.forEach((c) => {
+    html += `<div class="card" data-course="${c.id}">
+      <div class="row">
+        <input type="text" class="grow" id="cname-${c.id}" data-act="rename-course" value="${esc(c.name)}" aria-label="Tên khóa học · Course name">
+        ${c.id === state.courseId ? '<span class="hint">Đang chọn</span>' : `<button class="gbtn ghost sm" type="button" data-act="use-course">Chọn · Use</button>`}
+        <button class="gbtn danger sm" type="button" data-act="del-course"${state.courses.length < 2 ? " disabled" : ""}>Xoá khóa</button>
+      </div>
+      <ul class="ulist">${c.units.map((u) => `<li data-unit="${u.id}">
+        <input type="text" id="uname-${u.id}" data-act="rename-unit" value="${esc(u.name)}" aria-label="Tên unit · Unit name">
+        <span class="hint">${count(u.id)} câu</span>
+        <button class="ibtn del" type="button" data-act="del-unit" aria-label="Xoá unit · Delete unit">✕</button></li>`).join("")}</ul>
+      <div class="row">
+        <input type="text" class="grow" id="newunit-${c.id}" placeholder="Unit 4 · Food and Drink" aria-label="Unit mới · New unit">
+        <button class="gbtn ghost sm" type="button" data-act="add-unit">＋ Unit</button>
+      </div>
+    </div>`;
+  });
+  html += `<div class="section"><h3>Thêm khóa học <span class="en">· Add a course</span></h3>
+    <div class="row"><input type="text" class="grow" id="newCourse" placeholder="Pre-IELTS · Band 3.0–4.0"><button class="gbtn" type="button" data-act="add-course">Thêm · Add</button></div></div>`;
+  $("#pane-courses").innerHTML = html;
+}
+
+/* ---------------- Panel: PIN lock ---------------- */
+
+/** Render the PIN screen that guards the teacher-only tabs. */
+function renderLock() {
+  const has = !!state.teacher.pin;
+  $("#pane-lock").innerHTML = `<div class="lock">
+    <h3>Chỉ dành cho giáo viên · Teacher only</h3>
+    <p class="hint">${has ? "Nhập mã PIN để mở phần này. · Enter your PIN." : "Tạo mã PIN 4–6 số. Học sinh sẽ không mở được danh sách lớp và cài đặt ưu tiên. · Create a 4–6 digit PIN."}</p>
+    <input type="password" inputmode="numeric" id="pinInput" autocomplete="off" maxlength="6" aria-label="Mã PIN · PIN">
+    ${has ? "" : '<input type="password" inputmode="numeric" id="pinInput2" autocomplete="off" maxlength="6" placeholder="Nhập lại · Repeat" aria-label="Nhập lại mã PIN · Repeat PIN">'}
+    <p class="error" id="pinErr" hidden></p>
+    <div class="row"><button class="gbtn" type="button" data-act="unlock">${has ? "Mở khóa · Unlock" : "Tạo PIN · Set PIN"}</button></div>
+    ${has ? '<p class="hint">Quên mã PIN? <button class="linkbtn" type="button" data-act="reset-pin">Xoá PIN cùng toàn bộ lớp và lịch sử trả lời</button></p>' : ""}
+  </div>`;
+  setTimeout(() => { const i = $("#pinInput"); if (i) i.focus(); }, 0);
+}
+
+/** Check or create the PIN, then show the locked tab. */
+function tryUnlock() {
+  const p = ($("#pinInput") || {}).value || "";
+  const err = $("#pinErr");
+  const fail = (m) => { err.textContent = m; err.hidden = false; };
+  if (!state.teacher.pin) {
+    if (!/^\d{4,6}$/.test(p)) return fail("Mã PIN gồm 4–6 chữ số. · Use 4–6 digits.");
+    if (p !== $("#pinInput2").value) return fail("Hai mã không khớp. · The PINs don't match.");
+    state.teacher.pin = p;
+    saveState();
+  } else if (p !== state.teacher.pin) {
+    return fail("Sai mã PIN. · Wrong PIN.");
+  }
+  teacherUnlocked = true;
+  renderPanel();
+}
+
+/* ---------------- Panel: classes & students ---------------- */
+
+/** Classes that belong to the selected course. */
+function courseClasses() {
+  return state.classes.filter((k) => k.courseId === state.courseId);
+}
+
+/** Render the Classes tab: class picker, student table with tiers and stats, imports. */
+function renderClassesPane() {
+  const c = currentCourse();
+  const classes = courseClasses();
+  const cl = currentClass();
+  const stats = questionStats();
+  const qmap = questionMap();
+  let html = `<div class="section">
+    <div class="row" style="justify-content: space-between;"><h3>Lớp của khóa <span class="en">· ${esc(c.name)}</span></h3>
+      <button class="gbtn ghost sm" type="button" data-act="lock">Khóa lại · Lock</button></div>
+    <p class="hint">Mức học sinh và năng lực chỉ hiện ở đây. Trên màn hình chính chỉ có tên. · Levels are only shown here; the stage shows names only.</p>
+    ${classes.length ? `<select id="classPick" data-act="class-pick" aria-label="Lớp · Class">${classes.map((k) => `<option value="${k.id}"${cl && k.id === cl.id ? " selected" : ""}>${esc(k.name)} (${k.students.length})</option>`).join("")}</select>` : '<p class="hint">Khóa này chưa có lớp nào. Thêm lớp hoặc tải danh sách Excel ở dưới. · No classes yet.</p>'}
+  </div>`;
+
+  if (cl) {
+    const rows = cl.students.map((s) => {
+      const mine = state.history.filter((h) => h.s === s.id);
+      const ok = mine.filter((h) => h.r === "ok").length;
+      const a = abilityOf(s, stats, qmap);
+      return `<tr data-sid="${s.id}">
+        <td class="name">${esc(s.name)}</td>
+        <td><select id="tier-${s.id}" data-act="tier" aria-label="Mức · Level">${Object.entries(TIERS).map(([k, t]) => `<option value="${k}"${s.tier === k ? " selected" : ""}>${t.vi}</option>`).join("")}</select></td>
+        <td>${mine.length}</td>
+        <td>${mine.length ? Math.round((ok / mine.length) * 100) + "%" : "–"}</td>
+        <td><i class="ddot" data-d="${Math.round(a)}"></i> ${a.toFixed(1)}</td>
+        <td><button class="ibtn del" type="button" data-act="del-student" aria-label="Xoá · Delete">✕</button></td>
+      </tr>`;
+    }).join("");
+    html += `<div class="card">
+      <div class="row">
+        <input type="text" class="grow" id="clsname-${cl.id}" data-act="rename-class" value="${esc(cl.name)}" aria-label="Tên lớp · Class name">
+        <select id="clscourse-${cl.id}" data-act="move-class" aria-label="Khóa học · Course">${state.courses.map((k) => `<option value="${k.id}"${k.id === cl.courseId ? " selected" : ""}>${esc(k.name)}</option>`).join("")}</select>
+        <button class="gbtn danger sm" type="button" data-act="del-class">Xoá lớp</button>
+      </div>
+      ${cl.students.length ? `<div class="twrap"><table class="stable">
+        <thead><tr><th>Học sinh</th><th>Mức</th><th>Đã trả lời</th><th>Đúng</th><th>Năng lực (1–5)</th><th></th></tr></thead>
+        <tbody>${rows}</tbody></table></div>` : '<p class="hint">Lớp chưa có học sinh. · No students yet.</p>'}
+      <div class="row">
+        <input type="text" class="grow" id="newStudent" placeholder="Nguyễn Văn An" aria-label="Tên học sinh · Student name">
+        <button class="gbtn ghost sm" type="button" data-act="add-student">＋ Học sinh</button>
+      </div>
+      <div class="field">
+        <label for="pasteStudents">Dán nhiều tên (mỗi dòng một bạn, thêm <code>| yếu</code>, <code>| TB</code> hoặc <code>| khá</code> nếu muốn) · Paste names</label>
+        <textarea id="pasteStudents" rows="3" placeholder="Trần Thu Hà | yếu&#10;Lê Minh Khoa | khá"></textarea>
+        <div class="row"><button class="gbtn ghost sm" type="button" data-act="paste-students">Thêm danh sách · Add list</button></div>
+      </div>
+    </div>`;
+  }
+
+  html += `<div class="section">
+    <h3>Thêm lớp <span class="en">· Add a class</span></h3>
+    <div class="row"><input type="text" class="grow" id="newClass" placeholder="Pre-IELTS T2-T4-T6 · NĐC"><button class="gbtn" type="button" data-act="add-class">Thêm · Add</button></div>
+  </div>
+  <div class="section">
+    <h3>Tải danh sách lớp <span class="en">· Upload class lists</span></h3>
+    <p class="hint">Excel: mỗi sheet là một lớp (tên sheet = tên lớp), cột đầu là họ tên. Một cột ghi "yếu / TB / khá" thì mình lấy làm mức. Lớp được thêm vào khóa đang chọn. · One sheet per class; first column = name.</p>
+    <input class="file" type="file" id="studentFile" accept=".xlsx,.xls,.csv,.txt">
+    <p class="error" id="studentFileErr" hidden></p>
+  </div>`;
+  $("#pane-classes").innerHTML = html;
+}
+
+/** Read a support tier from a cell such as "yếu", "TB", "khá", "weak". */
+function tierOf(s) {
+  const v = String(s || "").toLowerCase().trim();
+  if (/^(yếu|yeu|kém|kem|weak|low|cần hỗ trợ|can ho tro)$/.test(v)) return "weak";
+  if (/^(tb|trung bình|trung binh|average|avg|mid|medium)$/.test(v)) return "mid";
+  if (/^(khá|kha|giỏi|gioi|khá giỏi|good|strong|high)$/.test(v)) return "strong";
+  return "";
+}
+
+/** Turn rows (from Excel or pasted lines) into students: first text cell = name, any later tier cell = tier. */
+function rowsToStudents(rows) {
+  const head = /^(stt|tt|no\.?|#|họ( và)? tên|ho ten|tên|ten|name|full name|học sinh|hoc sinh|student|mức|muc|level)$/i;
+  const out = [];
+  rows.forEach((row) => {
+    const cells = (Array.isArray(row) ? row : [row]).map((c) => (c == null ? "" : String(c).trim()));
+    const i = cells.findIndex((c) => c && !/^\d+$/.test(c));
+    if (i < 0 || head.test(cells[i])) return;
+    const tierCell = cells.slice(i + 1).find((c) => tierOf(c));
+    out.push({ id: makeId(), name: cells[i], tier: tierOf(tierCell) || "mid" });
+  });
+  return out;
+}
+
+/** Add students to a class, skipping names already in it. */
+function addStudents(cl, list) {
+  const have = new Set(cl.students.map((s) => s.name.toLowerCase()));
+  let n = 0;
+  list.forEach((s) => {
+    if (!s.name || have.has(s.name.toLowerCase())) return;
+    have.add(s.name.toLowerCase());
+    cl.students.push(s);
+    n += 1;
+  });
+  return n;
+}
+
+/** Create a class in the selected course; returns it. */
+function createClass(name) {
+  const cl = { id: makeId(), name: name || "Lớp mới · New class", courseId: state.courseId, students: [] };
+  state.classes.push(cl);
+  state.classId = cl.id;
+  return cl;
+}
+
+/** Import an Excel/CSV/TXT class list: every sheet becomes (or fills) a class. */
+async function onStudentFile(e) {
+  const file = e.target.files && e.target.files[0];
+  const err = $("#studentFileErr");
+  if (!file) return;
+  try {
+    const ext = file.name.split(".").pop().toLowerCase();
+    const base = file.name.replace(/\.[^.]+$/, "");
+    let sheets;
+    if (ext === "txt") {
+      sheets = [{ name: base, rows: (await file.text()).split(/\r?\n/).map((l) => l.split(/\s*\|\s*|\t/)) }];
+    } else {
+      const wb = await readWorkbook(file, ext);
+      sheets = wb.SheetNames.map((n) => ({
+        name: ext === "csv" || genericSheet(n) ? base : n,
+        rows: XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, blankrows: false })
+      }));
+    }
+    let classes = 0, students = 0;
+    sheets.forEach((s) => {
+      const list = rowsToStudents(s.rows);
+      if (!list.length) return;
+      let cl = courseClasses().find((k) => k.name.toLowerCase() === s.name.toLowerCase());
+      if (!cl) { cl = createClass(s.name); classes += 1; }
+      students += addStudents(cl, list);
+      state.classId = cl.id;
+    });
+    if (!students) throw new Error("Không tìm thấy tên học sinh trong file. · No student names found.");
+    saveState();
+    renderAll();
+    toast(`Đã thêm ${students} học sinh, ${classes} lớp mới · Added ${students} students`);
+  } catch (ex) {
+    if (err) { err.textContent = ex.message || "Không đọc được file. · Couldn't read this file."; err.hidden = false; }
+  }
+}
+
+/* ---------------- Panel: teacher settings (ZPD) ---------------- */
+
+/** Render the teacher-only priority settings with a live preview for the selected class. */
+function renderTeacherPane() {
+  const t = state.teacher;
+  const cl = currentClass();
+  const pool = remainingQuestions();
+  const stats = questionStats();
+  let preview = '<p class="hint">Chọn một lớp ở màn hình chính để xem trước. · Pick a class on the stage to preview.</p>';
+  if (cl && cl.students.length) {
+    const rows = cl.students.filter((s) => t.scope === "all" || s.tier === "weak").map((s) => {
+      const plan = zpdPlan(s, pool, stats);
+      const total = plan.items.reduce((n, i) => n + i.w, 0) || 1;
+      const byLevel = [0, 0, 0, 0, 0, 0];
+      plan.items.forEach((i) => { byLevel[Math.round(i.d)] += i.w / total; });
+      const mix = [1, 2, 3, 4, 5].filter((d) => byLevel[d] >= 0.01)
+        .map((d) => `<span><i class="ddot" data-d="${d}"></i> ${DIFF_LABELS[d]} <span class="pct">${Math.round(byLevel[d] * 100)}%</span></span>`).join("<br>");
+      return `<tr><td class="name">${esc(s.name)}</td><td>${plan.a.toFixed(1)}</td><td>${plan.target.toFixed(1)}${plan.lastMiss ? " ↓" : ""}</td><td>${mix || "–"}</td></tr>`;
+    }).join("");
+    preview = rows
+      ? `<div class="twrap"><table class="stable"><thead><tr><th>Học sinh</th><th>Năng lực</th><th>Mục tiêu</th><th>Khả năng ra câu · Draw odds</th></tr></thead><tbody>${rows}</tbody></table></div>
+         <p class="hint">Tính trên các que còn trong ống (${isExit() ? "vé ra về" : "câu hỏi bài học"}, unit đang chọn). ↓ = vừa trả lời chưa được nên hạ độ khó. · Based on sticks left in the current tube.</p>`
+      : '<p class="hint">Lớp này chưa có học sinh mức "Yếu". Đổi mức ở tab Lớp & Học sinh hoặc áp dụng cho tất cả. · No students marked "needs support".</p>';
+  }
+  $("#pane-teacher").innerHTML = `
+    <div class="section">
+      <div class="row" style="justify-content: space-between;"><h3>Ưu tiên câu hỏi theo năng lực <span class="en">· ZPD priority</span></h3>
+        <button class="gbtn ghost sm" type="button" data-act="lock">Khóa lại · Lock</button></div>
+      <label class="switch" for="zpdOn"><input type="checkbox" id="zpdOn" data-act="zpd-on"${t.zpd ? " checked" : ""}> Bật · Enabled</label>
+      <p class="explain">Khi bạn chọn một học sinh ở ô <b>Người trả lời</b>, ống xăm vẫn lắc và rút như bình thường, nhưng câu hỏi được ưu tiên theo <b>vùng phát triển gần (ZPD)</b>: khó hơn năng lực hiện tại của em một chút. Nếu em vừa trả lời chưa được, câu tiếp theo sẽ dễ hơn và thiên về dạng <b>nhận diện</b> (chọn từ, nghĩa → từ, trái nghĩa) để em lấy lại tự tin. Năng lực bắt đầu từ mức bạn đặt và tự cập nhật sau mỗi lần bạn bấm ✓ / ↻. Học sinh không nhìn thấy gì khác trên màn hình.</p>
+      <fieldset class="radios">
+        <legend>Áp dụng cho · Applies to</legend>
+        <label><input type="radio" name="zpdScope" value="weak" data-act="zpd-scope"${t.scope !== "all" ? " checked" : ""}> Chỉ học sinh mức "Yếu" · Students who need support</label>
+        <label><input type="radio" name="zpdScope" value="all" data-act="zpd-scope"${t.scope === "all" ? " checked" : ""}> Tất cả học sinh · Every student</label>
+      </fieldset>
+      <div class="field">
+        <label for="zpdStep">Mức nâng độ khó mỗi lần · Step above ability: <b id="zpdStepOut">+${Number(t.step).toFixed(1)}</b></label>
+        <input type="range" id="zpdStep" data-act="zpd-step" min="0.2" max="1" step="0.1" value="${t.step}">
+        <p class="hint">Nhỏ = an toàn, tăng chậm. Lớn = thử thách hơn. · Small = gentle, large = more challenge.</p>
+      </div>
+    </div>
+    <div class="section">
+      <h3>Xem trước <span class="en">· Preview${cl ? " · " + esc(cl.name) : ""}</span></h3>
+      ${preview}
+    </div>
+    <div class="section">
+      <h3>Đổi mã PIN <span class="en">· Change PIN</span></h3>
+      <div class="row"><input type="password" inputmode="numeric" class="grow" id="newPin" maxlength="6" autocomplete="off" aria-label="Mã PIN mới · New PIN"><button class="gbtn ghost sm" type="button" data-act="change-pin">Lưu · Save</button></div>
+      <p class="hint">Mã PIN chỉ là khóa nhẹ trên máy này, đủ để học sinh không mở nhầm. Dữ liệu lớp chỉ lưu trong trình duyệt của máy bạn. · A light lock; data stays in this browser.</p>
+    </div>`;
+}
+
+/* ---------------- Panel actions ---------------- */
+
+/** Actions that need a second click to confirm. */
+const ARMED = new Set(["del-course", "del-unit", "del-class", "reset-pin"]);
+
+/** Run a click action from the Courses, Classes, Teacher or PIN panes. */
+function panelClick(act, el) {
+  const card = el.closest("[data-course]");
+  const course = card ? state.courses.find((c) => c.id === card.dataset.course) : null;
+  const li = el.closest("[data-unit]");
+  const row = el.closest("[data-sid]");
+  const cl = currentClass();
+  switch (act) {
+    case "add-course": {
+      const name = $("#newCourse").value.trim();
+      if (!name) return toast("Nhập tên khóa học · Type a course name");
+      const c = createCourse(name, [GENERAL]);
+      state.courseId = c.id;
+      state.unitId = ALL;
+      break;
+    }
+    case "use-course": state.courseId = course.id; state.unitId = ALL; break;
+    case "del-course": {
+      const gone = course.id;
+      state.courses = state.courses.filter((c) => c.id !== gone);
+      const ids = new Set(state.questions.filter((q) => q.courseId === gone).map((q) => q.id));
+      state.questions = state.questions.filter((q) => !ids.has(q.id));
+      state.drawn.lesson = state.drawn.lesson.filter((d) => !ids.has(d.id));
+      state.drawn.exit = state.drawn.exit.filter((d) => !ids.has(d.id));
+      state.classes.forEach((k) => { if (k.courseId === gone) k.courseId = state.courses[0].id; });
+      break;
+    }
+    case "add-unit": {
+      const inp = $("#newunit-" + course.id);
+      if (!inp.value.trim()) return toast("Nhập tên unit · Type a unit name");
+      unitIdByName(course, inp.value.trim());
+      break;
+    }
+    case "del-unit": {
+      const uid = li.dataset.unit;
+      course.units = course.units.filter((u) => u.id !== uid);
+      const ids = new Set(state.questions.filter((q) => q.unitId === uid).map((q) => q.id));
+      state.questions = state.questions.filter((q) => !ids.has(q.id));
+      state.drawn.lesson = state.drawn.lesson.filter((d) => !ids.has(d.id));
+      state.drawn.exit = state.drawn.exit.filter((d) => !ids.has(d.id));
+      break;
+    }
+    case "unlock": return tryUnlock();
+    case "reset-pin":
+      state.teacher.pin = "";
+      state.classes = [];
+      state.history = state.history.map((h) => Object.assign(h, { s: null }));
+      state.classId = "";
+      state.studentId = "";
+      teacherUnlocked = false;
+      break;
+    case "lock": teacherUnlocked = false; break;
+    case "add-class": {
+      const name = $("#newClass").value.trim();
+      if (!name) return toast("Nhập tên lớp · Type a class name");
+      createClass(name);
+      break;
+    }
+    case "del-class":
+      state.classes = state.classes.filter((k) => k.id !== cl.id);
+      state.classId = "";
+      break;
+    case "add-student": {
+      const name = $("#newStudent").value.trim();
+      if (!name) return toast("Nhập tên học sinh · Type a name");
+      addStudents(cl, [{ id: makeId(), name, tier: "mid" }]);
+      break;
+    }
+    case "paste-students": {
+      const rows = $("#pasteStudents").value.split(/\r?\n/).filter((l) => l.trim()).map((l) => l.split(/\s*\|\s*|\t/));
+      const n = addStudents(cl, rowsToStudents(rows));
+      toast(`Đã thêm ${n} học sinh · Added ${n}`);
+      break;
+    }
+    case "del-student":
+      cl.students = cl.students.filter((s) => s.id !== row.dataset.sid);
+      break;
+    case "change-pin": {
+      const p = $("#newPin").value;
+      if (!/^\d{4,6}$/.test(p)) return toast("Mã PIN gồm 4–6 chữ số · Use 4–6 digits");
+      state.teacher.pin = p;
+      toast("Đã đổi mã PIN · PIN changed");
+      break;
+    }
+    default: return;
+  }
+  saveState();
+  renderAll();
+}
+
+/** Run a change action (renames, selects, toggles) from the panel panes. */
+function panelChange(act, el) {
+  const card = el.closest("[data-course]");
+  const course = card ? state.courses.find((c) => c.id === card.dataset.course) : null;
+  const cl = currentClass();
+  switch (act) {
+    case "rename-course": if (el.value.trim()) course.name = el.value.trim(); break;
+    case "rename-unit": {
+      const u = course.units.find((x) => x.id === el.closest("[data-unit]").dataset.unit);
+      if (u && el.value.trim()) u.name = el.value.trim();
+      break;
+    }
+    case "class-pick": state.classId = el.value; state.studentId = ""; break;
+    case "rename-class": if (el.value.trim()) cl.name = el.value.trim(); break;
+    case "move-class":
+      cl.courseId = el.value;
+      state.courseId = el.value;
+      state.unitId = ALL;
+      state.classId = cl.id;
+      break;
+    case "tier": {
+      const s = cl.students.find((x) => x.id === el.closest("[data-sid]").dataset.sid);
+      if (s) s.tier = el.value;
+      break;
+    }
+    case "zpd-on": state.teacher.zpd = el.checked; break;
+    case "zpd-scope": state.teacher.scope = el.value; break;
+    case "zpd-step": state.teacher.step = Number(el.value); break;
+    default: return;
+  }
+  saveState();
+  renderAll();
+}
+
+/* ---------------- Controls ---------------- */
+
+/** Update the sound toggle label to match state. */
+function renderSoundBtn() {
+  const b = $("#soundBtn");
+  b.classList.toggle("on", state.sound);
+  b.setAttribute("aria-pressed", String(state.sound));
+  b.innerHTML = state.sound
+    ? '<span><span class="vi">Âm thanh: Bật</span><span class="en">Sound: On</span></span>'
+    : '<span><span class="vi">Âm thanh: Tắt</span><span class="en">Sound: Off</span></span>';
+}
+
+/** Toggle fullscreen for projector use; ignore if the browser refuses. */
+function toggleFullscreen() {
+  try {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen().catch(() => toast("Không mở được toàn màn hình · Fullscreen isn't available here"));
+  } catch (e) {
+    toast("Không mở được toàn màn hình · Fullscreen isn't available here");
+  }
+}
+
+/** Wire up every button, input and keyboard shortcut. */
+function bindEvents() {
+  document.querySelectorAll(".mode").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+  $("#units").addEventListener("click", (e) => {
+    const b = e.target.closest(".set");
+    if (!b || busy) return;
+    state.unitId = b.dataset.unit;
+    $("#fallen").hidden = true;
+    saveState();
+    renderAll();
+  });
+  $("#courseSel").addEventListener("change", (e) => {
+    state.courseId = e.target.value;
+    state.unitId = ALL;
+    state.classId = "";
+    state.studentId = "";
+    $("#fallen").hidden = true;
+    saveState();
+    renderAll();
+  });
+  $("#classSel").addEventListener("change", (e) => { state.classId = e.target.value; state.studentId = ""; saveState(); renderAll(); });
+  $("#studentSel").addEventListener("change", (e) => { state.studentId = e.target.value; saveState(); });
+
+  $("#drawBtn").addEventListener("click", draw);
+  $("#againBtn").addEventListener("click", draw);
+  $("#closeSlip").addEventListener("click", hideSlip);
+  $("#putBackBtn").addEventListener("click", () => currentSlipId && putBack(currentSlipId));
+  $("#showAnswer").addEventListener("click", revealAnswer);
+  $("#markOk").addEventListener("click", () => markResult("ok"));
+  $("#markRetry").addEventListener("click", () => markResult("retry"));
+  $("#slipLayer").addEventListener("click", (e) => { if (e.target.id === "slipLayer") hideSlip(); });
+  $("#resetBtn").addEventListener("click", (e) => armConfirm(e.currentTarget, resetDraws));
+  $("#chips").addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip");
+    if (chip) openSlip(chip.dataset.id, false);
+  });
+
+  $("#openPanel").addEventListener("click", () => openPanel("questions"));
+  $("#sampleOpen").addEventListener("click", () => openPanel("questions"));
+  $("#closePanel").addEventListener("click", closePanel);
+  $("#backdrop").addEventListener("click", closePanel);
+  document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => { activeTab = t.dataset.tab; renderPanel(); }));
+
+  $("#unitAdd").addEventListener("change", () => { $("#unitNewWrap").hidden = $("#unitAdd").value !== NEW; if (pendingImport) renderImport(); });
+  $("#addOne").addEventListener("click", () => {
+    const item = { text: $("#oneInput").value, answer: isExit() ? $("#oneAnswer").value : "", manual: Number($("#diffAdd").value) };
+    if (addItems([item], "append")) { $("#oneInput").value = ""; $("#oneAnswer").value = ""; $("#oneInput").focus(); }
+  });
+  $("#oneInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); isExit() ? $("#oneAnswer").focus() : $("#addOne").click(); }
+  });
+  $("#oneAnswer").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); $("#addOne").click(); }
+  });
+  $("#addBulk").addEventListener("click", () => {
+    const items = $("#bulkInput").value.split(/\r?\n/).filter((l) => l.trim()).map((l) => {
+      const it = splitLine(l);
+      if (!isExit()) it.answer = "";
+      return it;
+    });
+    if (addItems(items, "append")) $("#bulkInput").value = "";
+  });
+  $("#fileInput").addEventListener("change", onFileChosen);
+  $("#importAppend").addEventListener("click", () => applyImport("append"));
+  $("#importReplace").addEventListener("click", () => applyImport("replace"));
+  $("#clearAll").addEventListener("click", (e) => armConfirm(e.currentTarget, clearActive));
+
+  $("#qlist").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    const li = e.target.closest("li");
+    if (!btn || !li) return;
+    const act = btn.dataset.act;
+    if (act === "edit") startEdit(li);
+    else if (act === "del") deleteQuestion(li.dataset.id);
+    else if (act === "save") saveEdit(li);
+    else if (act === "cancel") renderQuestionsPane();
+  });
+  $("#qlist").addEventListener("change", (e) => {
+    if (e.target.dataset.act !== "diff") return;
+    const q = state.questions.find((x) => x.id === e.target.closest("li").dataset.id);
+    if (!q) return;
+    const v = Number(e.target.value);
+    if (v) q.manual = v; else delete q.manual;
+    saveState();
+    renderQuestionsPane();
+  });
+
+  ["#pane-courses", "#pane-classes", "#pane-teacher", "#pane-lock"].forEach((sel) => {
+    const pane = $(sel);
+    pane.addEventListener("click", (e) => {
+      const el = e.target.closest("button[data-act]");
+      if (!el || el.disabled) return;
+      const act = el.dataset.act;
+      if (ARMED.has(act)) armConfirm(el, () => panelClick(act, el));
+      else panelClick(act, el);
+    });
+    pane.addEventListener("change", (e) => {
+      const el = e.target.closest("[data-act]");
+      if (el && el.tagName !== "BUTTON") panelChange(el.dataset.act, el);
+    });
+    pane.addEventListener("input", (e) => {
+      if (e.target.id === "zpdStep") $("#zpdStepOut").textContent = "+" + Number(e.target.value).toFixed(1);
+    });
+    pane.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || e.target.tagName !== "INPUT") return;
+      const map = { pinInput: "unlock", pinInput2: "unlock", newCourse: "add-course", newClass: "add-class", newStudent: "add-student", newPin: "change-pin" };
+      const act = map[e.target.id] || (e.target.id.startsWith("newunit-") ? "add-unit" : "");
+      if (act) { e.preventDefault(); panelClick(act, e.target); }
+    });
+  });
+  $("#pane-classes").addEventListener("change", (e) => { if (e.target.id === "studentFile") onStudentFile(e); });
+
+  $("#soundBtn").addEventListener("click", () => { state.sound = !state.sound; saveState(); renderSoundBtn(); });
+  $("#fsBtn").addEventListener("click", toggleFullscreen);
+
+  document.addEventListener("keydown", (e) => {
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName);
+    if (e.key === "Escape") { const open = !$("#slipLayer").hidden || !$("#panel").hidden; hideSlip(); closePanel(); if (!open && window.parent !== window) { try { window.parent.postMessage({ ongXam: "close" }, "*"); } catch (err) { } } return; }
+    if (typing || !$("#panel").hidden) return;
+    if ((e.key === "a" || e.key === "A") && !$("#slipLayer").hidden) { revealAnswer(); return; }
+    if (e.code === "Space") {
+      e.preventDefault();
+      draw();
+    }
+  });
+}
+
+/** Start the app. */
+function init() {
+  loadState();
+  bindEvents();
+  renderSoundBtn();
+  renderAll();
+}
+
+init();
+</script>
+
+</body></html>
